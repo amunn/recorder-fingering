@@ -1,0 +1,72 @@
+\documentclass[11pt]{article} 
+\usepackage{recorder-fingering}
+\usepackage{booktabs}
+\usepackage{fancyvrb}
+\usepackage[margin=1in]{geometry}
+\DefineShortVerb{\|}
+\title{The \texttt{recorder-fingering} package}
+\author{Alan Munn\\amunn@msu.edu}
+\date{Version 0.5, February 11, 2023}
+
+
+\begin{document} 
+\maketitle
+\section*{Usage}
+This package provides a single command |\fingering[<size>]{<note>}|  which will produce a fingering diagram for any note in the playable range of the recorder. The notes range from C–Eb for recorders in C (the default) or F–Ab (the |*| version of the command) for recorders in F.
+
+Notes are noted as C-B (first octave) c-b (second octave) and c'–eb' (third octave) with an equivalent scheme starting at F for the recorders in F.
+
+The chart below shows all of the possible fingerings. 
+
+\section*{Recorder in C fingering chart}
+\parindent=0pt
+\begin{tabular}{cccccccccccc}
+\toprule
+C & Db & D & Eb & E & F & Gb & G & Ab & A & Bb & B\\ 
+\midrule
+\fingering{C} & 
+\fingering{Db} & 
+\fingering{D} & 
+\fingering{Eb} & 
+\fingering{E} &
+\fingering{F} &
+\fingering{Gb} &
+\fingering{G} &
+\fingering{Ab} &
+\fingering{A} &
+\fingering{Bb} &
+\fingering{B}\\
+\bottomrule
+\end{tabular}
+
+\bigskip
+\begin{tabular}{cccccccccccc}
+\toprule
+c & db & d & eb & e & f & gb & g & ab & a & bb & b\\ 
+\midrule
+\fingering{c} &
+\fingering{db} &
+\fingering{d} &
+\fingering{eb} &
+\fingering{e} &
+\fingering{f} &
+\fingering{gb} &
+\fingering{g} &
+\fingering{ab} &
+\fingering{a} &
+\fingering{bb} &
+\fingering{b}\\
+\bottomrule
+\end{tabular}
+\hfill
+\begin{tabular}{cccc}
+\toprule
+c' & db' & d' & eb'\\
+\midrule
+\fingering{c'} &
+\fingering{db'} &
+\fingering{d'} &
+\fingering{eb'}\\
+\bottomrule
+\end{tabular}
+\end{document} 

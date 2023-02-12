@@ -25,9 +25,9 @@
 %
 % recorder-fingering.tex, recorder-fingering.pdf
 %
-% Version 0.5 2023/02/11
-\NeedsTeXFormat{LaTeX2e}[2022/11/01]
-\ProvidesPackage{recorder-fingering}[2023/02/11 v0.5
+% Version 0.6 2023/02/12
+\NeedsTeXFormat{LaTeX2e}[2022/12/01]
+\ProvidesPackage{recorder-fingering}[2023/02/12 v0.6
 Recorder fingering diagrams]
 \RequirePackage{tikz} 
 \usetikzlibrary{calc} 
@@ -57,205 +57,298 @@ hole/.style={circle,draw,#1},
 0/.style={fill=none}, 
 t/.style={node split half=0}, 
 top double/.style={circle,minimum size=7pt,inner sep=0pt,draw,#1}, 
-bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,#1}, 
+bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,#1},
 } 
-\ExplSyntaxOn 
-\NewDocumentCommand{\fingering}{sO{12pt}m}{ 
+\ExplSyntaxOn
+\keys_define:nn {fingering}{
+	thumboffset.bool_set:N = \g_fingering_thumboffset_bool,
+	width.dim_set:N = \g_fingering_size_dim,
+	thumboffset.initial:n = {true},
+	width.initial:n = {20pt}
+}
+\keys_define:nn {fingering / command}{
+	thumboffset.bool_set:N = \g_fingering_command_thumboffset_bool,
+	width.dim_set:N = \l_fingering_command_size_dim,
+}
+
+
+\NewDocumentCommand{\setupFingering}{m}{
+	\keys_set:nn {fingering} {#1}
+}
+
+\tl_set:Nn \l_fingering_thumboffset_x {-.5}
+\tl_set:Nn \l_fingering_thumboffset_y {-.25}
+\cs_new:Nn \fingering_offset_reset:
+{\tl_gset:Nn \g_fingering_thumboffset_x {-.5}
+\tl_gset:Nn \g_fingering_thumboffset_y {-.25}
+}
+\cs_new:Nn \fingering_offset_zero:
+{\tl_gset:Nn \g_fingering_thumboffset_x {0}
+\tl_gset:Nn \g_fingering_thumboffset_y {0}
+}
+\cs_new:Nn \fingering_set_thumboffset: {
+\bool_if:nTF {\g_fingering_command_thumboffset_bool}
+			{\fingering_offset_reset:}
+			{\fingering_offset_zero:}
+}
+
+\NewDocumentCommand{\fingering}{som}{
+\IfNoValueTF{#2}
+	{\keys_set:nn {fingering / command} {width = \g_fingering_size_dim}
+	 \bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}}
+	{\bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}
+	\keys_set:nn {fingering /command } {#2}}
 \IfBooleanTF{#1} 
-	{{\resizebox{#2}{!}{\begin{tikzpicture} 
-	\str_case:nnTF{#3}{ 
-		{F}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+	{{\resizebox{\l_fingering_command_size_dim}{!}{\begin{tikzpicture} 
+	\str_case:nnTF{#3}{
+		{F}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:}
 			\node[top~double=1,]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 		} 
-		{Gb}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Gb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1,]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{G}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{G}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1,]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{Ab}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Ab}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{A}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{A}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{Bb}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Bb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{B}{\foreach~\x~[count=\xi]~in~{1,1,1,1,0,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{B}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,0,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{C}{\foreach~\x~[count=\xi]~in~{1,1,1,1,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{C}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{Db}{\foreach~\x~[count=\xi]~in~{1,1,1,0,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Db}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,0,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{D}{\foreach~\x~[count=\xi]~in~{1,1,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{D}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{Eb}{\foreach~\x~[count=\xi]~in~{1,1,0,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Eb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,0,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{E}{\foreach~\x~[count=\xi]~in~{1,1,0,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{E}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,0,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{f}{\foreach~\x~[count=\xi]~in~{1,0,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{f}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,0,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{gb}{\foreach~\x~[count=\xi]~in~{0,1,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{gb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{0,1,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{g}{\foreach~\x~[count=\xi]~in~{0,0,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{g}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{0,0,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{ab}{\foreach~\x~[count=\xi]~in~{0,0,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{ab}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{0,0,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{a}{\foreach~\x~[count=\xi]~in~{t,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{a}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{bb}{\foreach~\x~[count=\xi]~in~{t,1,1,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{bb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{b}{\foreach~\x~[count=\xi]~in~{t,1,1,1,0,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{b}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,1,0,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{c}{\foreach~\x~[count=\xi]~in~{t,1,1,1,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{c}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,1,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{db}{\foreach~\x~[count=\xi]~in~{t,1,1,0,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{db}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,0,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{d}{\foreach~\x~[count=\xi]~in~{t,1,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{d}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{eb}{\foreach~\x~[count=\xi]~in~{t,1,1,0,0,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{eb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,0,0,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{e}{\foreach~\x~[count=\xi]~in~{t,1,1,0,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{e}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,0,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{f'}{\foreach~\x~[count=\xi]~in~{t,1,0,0,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{f'}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,0,0,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{gb'}{\foreach~\x~[count=\xi]~in~{t,1,0,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{gb'}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,0,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 			\node[hole=1]~at~(0,-9/2)~{}; 
 			} 
-		{g'}{\foreach~\x~[count=\xi]~in~{t,1,0,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{g'}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,0,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{ab'}{\foreach~\x~[count=\xi]~in~{t,0,1,1,0,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{ab'}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,0,1,1,0,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0]~at~(.15,-8/2)~{}; 
@@ -267,200 +360,256 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,#1},
 	\end{tikzpicture} 
 	} 
 	}} 
-	{\resizebox{#2}{!}{\begin{tikzpicture} 
+	{\resizebox{\l_fingering_command_size_dim}{!}{\begin{tikzpicture} 
 	\str_case:nnTF{#3}{ 
-		{C}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{C}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1,]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 		} 
-		{Db}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Db}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1,]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{D}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{D}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1,]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{Eb}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Eb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{E}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{E}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{F}{\foreach~\x~[count=\xi]~in~{1,1,1,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{F}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{Gb}{\foreach~\x~[count=\xi]~in~{1,1,1,1,0,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Gb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,0,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{G}{\foreach~\x~[count=\xi]~in~{1,1,1,1,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{G}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,1,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{Ab}{\foreach~\x~[count=\xi]~in~{1,1,1,0,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Ab}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,0,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{A}{\foreach~\x~[count=\xi]~in~{1,1,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{A}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{Bb}{\foreach~\x~[count=\xi]~in~{1,1,0,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{Bb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,0,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{B}{\foreach~\x~[count=\xi]~in~{1,1,0,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{B}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,1,0,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{c}{\foreach~\x~[count=\xi]~in~{1,0,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{c}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{1,0,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{db}{\foreach~\x~[count=\xi]~in~{0,1,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{db}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{0,1,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{d}{\foreach~\x~[count=\xi]~in~{0,0,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{d}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{0,0,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{eb}{\foreach~\x~[count=\xi]~in~{0,0,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{eb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{0,0,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{e}{\foreach~\x~[count=\xi]~in~{t,1,1,1,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{e}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,1,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{f}{\foreach~\x~[count=\xi]~in~{t,1,1,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{f}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{gb}{\foreach~\x~[count=\xi]~in~{t,1,1,1,0,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{gb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,1,0,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{g}{\foreach~\x~[count=\xi]~in~{t,1,1,1,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{g}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,1,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{ab}{\foreach~\x~[count=\xi]~in~{t,1,1,0,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{ab}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,0,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{a}{\foreach~\x~[count=\xi]~in~{t,1,1,0,0,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{a}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,0,0,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{bb}{\foreach~\x~[count=\xi]~in~{t,1,1,0,0,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{bb}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,0,0,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{b}{\foreach~\x~[count=\xi]~in~{t,1,1,0,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{b}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,1,0,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{c'}{\foreach~\x~[count=\xi]~in~{t,1,0,0,1,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{c'}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,0,0,1,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=0]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0,]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=0]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{db'}{\foreach~\x~[count=\xi]~in~{t,1,0,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{db'}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,0,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 			\node[hole=1]~at~(0,-9/2)~{}; 
 			} 
-		{d'}{\foreach~\x~[count=\xi]~in~{t,1,0,1,1,0}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{d'}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,1,0,1,1,0}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=1]~at~(.15,-8/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-8.15/2)~{}; 
 			} 
-		{eb'}{\foreach~\x~[count=\xi]~in~{t,0,1,1,0,1}{ 
-			\node[hole=\x]~at~(0,-\xi/2)~{};} 
+		{eb'}{\fingering_set_thumboffset:
+			\foreach~\x~[count=\xi]~in~{t,0,1,1,0,1}{ 
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:} 
 			\node[top~double=1]~at~(.15,-7/2)~{}; 
 			\node[bottom~double=1]~at~(-.15,-7.15/2)~{}; 
 			\node[top~double=0]~at~(.15,-8/2)~{}; 

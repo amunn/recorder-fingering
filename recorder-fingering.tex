@@ -3,16 +3,33 @@
 \usepackage{booktabs}
 \usepackage{fancyvrb}
 \usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+\usepackage{musixtex}
+\input musixlyr
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{positioning}
+\NewDocumentCommand{\addf}{m}{\tikz[remember picture]{\node[overlay,above=of pic cs:#1]{\fingering{#1}};}}
+
 \DefineShortVerb{\|}
 \title{The \texttt{recorder-fingering} package}
 \author{Alan Munn\\amunn@msu.edu}
-\date{Version 0.5, February 11, 2023}
+\date{Version 0.6, February 12, 2023}
 
 
 \begin{document} 
 \maketitle
 \section*{Usage}
-This package provides a single command |\fingering[<size>]{<note>}|  which will produce a fingering diagram for any note in the playable range of the recorder. The notes range from C–Eb for recorders in C (the default) or F–Ab (the |*| version of the command) for recorders in F.
+This package provides a single command |\fingering[<parameters>]{<note>}|  which will produce a fingering diagram for any note in the playable range of a recorder, plus a setup command to set two parameters globally: |width| and |thumboffset|. The |\fingering| command produces a fingering for a recorder in C (soprano/tenor), while the |\fingering*| command produces a fingering for a recorder in F (sopranino/alto).
+
+The |thumboffset| parameter (default = |true|) offsets the top hole to the left to signify that it's the back hole. Setting this parameter to |false| removes the offset.
+
+The |width| parameter sets the width of the diagram; it defaults to 20pt for the default thumb offset diagrams. If you set |thumboffset=false| you will probably want to choose a smaller value e.g. |12pt|.
+
+You can set the parameters individually for any particular |\fingering| command, but most likely you'll want global settings. To set the parameters globally use the command |\setupFingering|
+
+e.g. |\setupFingering{width=12pt},thumboffset=false| makes all diagrams use an inline thumb hole and 12pt width.
+
+The notes range from C–Eb for recorders in C (the default) or F–Ab (the |*| version of the command) for recorders in F.
 
 Notes are noted as C-B (first octave) c-b (second octave) and c'–eb' (third octave) with an equivalent scheme starting at F for the recorders in F.
 
@@ -58,7 +75,13 @@ c & db & d & eb & e & f & gb & g & ab & a & bb & b\\
 \fingering{b}\\
 \bottomrule
 \end{tabular}
-\hfill
+
+\setupFingering{width=10pt,thumboffset=false}
+\bigskip
+
+Here's what the fingering diagrams look like with |thumboffset=false|:
+
+
 \begin{tabular}{cccc}
 \toprule
 c' & db' & d' & eb'\\
@@ -69,4 +92,26 @@ c' & db' & d' & eb'\\
 \fingering{eb'}\\
 \bottomrule
 \end{tabular}
+\section*{Using in conjunction with \texttt{musixtex}}
+\setupFingering{thumboffset=true,width=12pt}
+It's simple to add fingerings on top of musical excerpts created with |musixtex| using the |tikzmark| library to place the fingerings.  See the source of this document for how this was done:
+
+\subsection*{C Maj scale Soprano/Tenor recorder fingerings}
+\vspace{1in}
+\begin{minipage}{\textwidth}
+\begin{music}
+\setlyrics{scale}{C D E F G A B C}
+\lyrraise{1}{b-2ex}
+\assignlyrics{1}{scale}
+\startextract
+\NOTEs
+\tikzmark{C}\wh{c}\tikzmark{D}\wh{d}\tikzmark{E}\wh{e}\tikzmark{F}\wh{f}
+\tikzmark{G}\wh{g}\tikzmark{A}\wh{h}\tikzmark{B}\wh{i}\tikzmark{c}\wh{j}
+\en
+\zendextract
+\end{music}
+\addf{C}\addf{D}\addf{E}\addf{E}\addf{F}\addf{G}\addf{A}\addf{B}\addf{c}
+\end{minipage}
+\section*{Caveat}
+This package is under development, and although the main commands are not likely to change, until the package is released on CTAN, it is subject to wholesale changes even at the user level if I think that makes for a more useable package. You have been warned! Comments/bug reports are of course welcome using the GitHub issue tracker. 
 \end{document} 

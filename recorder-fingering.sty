@@ -54,8 +54,10 @@ node split radius/.initial=1,
 } }, 
 hole/.style={circle,draw,#1}, 
 1/.style={fill=black}, 
-0/.style={fill=none}, 
-t/.style={node split half=0}, 
+0/.style={fill=none},
+2/.style={fill=black},
+t/.style={node split half=0},
+h/.style={node split half=-90}, 
 top double/.style={circle,minimum size=7pt,inner sep=0pt,draw,#1}, 
 bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,#1},
 } 
@@ -70,8 +72,6 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,#1},
 	thumboffset.bool_set:N = \g_fingering_command_thumboffset_bool,
 	width.dim_set:N = \l_fingering_command_size_dim,
 }
-
-
 \NewDocumentCommand{\setupFingering}{m}{
 	\keys_set:nn {fingering} {#1}
 }
@@ -91,6 +91,51 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,#1},
 			{\fingering_offset_reset:}
 			{\fingering_offset_zero:}
 }
+
+\clist_new:N \l_fing_clist
+\clist_new:N \l_topholes_clist
+
+% basic idea for splitting the clist using step_inline and pop from Jonathan P. Spratte (Skillmon)
+\NewDocumentCommand{\NewFingering}{m}
+{
+\clist_set:Nn \l_fing_clist {#1}
+	\clist_clear:N \l_topholes_clist
+	\int_step_inline:nn { 6 } { 
+		\clist_pop:NNF \l_fing_clist \l_tmpa_tl { \msg_error:nn { alan } { too-few }}
+		\clist_put_right:NV \l_topholes_clist \l_tmpa_tl }
+		\begin{tikzpicture}
+		\fingering_set_thumboffset:
+			\foreach[expand~list]~\x~[count=\xi]~in~\l_topholes_clist {
+			\node[hole=\x]~at~(0+\g_fingering_thumboffset_x,-\xi/2+\g_fingering_thumboffset_y)~{};
+			\fingering_offset_zero:}
+			\clist_pop:NN \l_fing_clist \l_tmpa_tl
+			\int_case:nnTF {\l_tmpa_tl}{ 
+			 {0}	{\node[top~double=0]~at~(.15,-7/2)~{}; 
+					\node[bottom~double=0]~at~(-.15,-7.15/2)~{};}
+			 {2}	{\node[top~double=1,]~at~(.15,-7/2)~{}; 
+					\node[bottom~double=1]~at~(-.15,-7.15/2)~{};}
+			 {1}	{\node[top~double=1]~at~(.15,-7/2)~{}; 
+					\node[bottom~double=0]~at~(-.15,-7.15/2)~{};}
+					}
+			{}
+			{}
+			\clist_pop:NN \l_fing_clist \l_tmpa_tl
+			\int_case:nnTF {\l_tmpa_tl}{
+			{0}		{\node[top~double=0,]~at~(.15,-8/2)~{}; 
+					\node[bottom~double=0]~at~(-.15,-8.15/2)~{};}
+			{2}		{\node[top~double=1,]~at~(.15,-8/2)~{}; 
+					\node[bottom~double=1]~at~(-.15,-8.15/2)~{};}
+			{1}		{\node[top~double=1,]~at~(.15,-8/2)~{}; 
+					\node[bottom~double=0]~at~(-.15,-8.15/2)~{};}
+					}
+			{}
+			{}
+			\clist_if_empty:NTF \l_fing_clist
+				{}
+				{\clist_pop:NN \l_fing_clist \l_tmpa_tl
+				\node[hole=\l_tmpa_tl]~at~(0,-9/2)~{};}
+		\end{tikzpicture}
+		} 
 
 \NewDocumentCommand{\fingering}{som}{
 \IfNoValueTF{#2}

@@ -134,23 +134,35 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 % display the bottom two paired holes
 			\clist_pop:NN \l_fingering_holes_clist \l_tmpa_tl
 			\int_case:nnTF {\l_tmpa_tl}{ 
-			 {0}	{\node[top~double=0]~at~(.15,-7/2)~{}; 
-					\node[bottom~double=0]~at~(-.15,-7.15/2)~{};}
-			 {2}	{\node[top~double=1,]~at~(.15,-7/2)~{}; 
-					\node[bottom~double=1]~at~(-.15,-7.15/2)~{};}
-			 {1}	{\node[top~double=1]~at~(.15,-7/2)~{}; 
-					\node[bottom~double=0]~at~(-.15,-7.15/2)~{};}
+			 {0}	{\node[top~double=0]~at~
+			 			(\c_fingering_six_seven_x_tl,-\c_fingering_six_top_tl)~{}; 
+					\node[bottom~double=0]~at~
+						(-\c_fingering_six_seven_x_tl,-\c_fingering_six_bot_tl)~{};}
+			 {2}	{\node[top~double=1,]~at~
+			 			(\c_fingering_six_seven_x_tl,-\c_fingering_six_top_tl)~{}; 
+					\node[bottom~double=1]~at~
+						(-\c_fingering_six_seven_x_tl,-\c_fingering_six_bot_tl)~{};}
+			 {1}	{\node[top~double=1]~at~
+			 			(\c_fingering_six_seven_x_tl,-\c_fingering_six_top_tl)~{}; 
+					\node[bottom~double=0]~at~
+						(-\c_fingering_six_seven_x_tl,-\c_fingering_six_bot_tl)~{};}
 					}
 			{}
 			{}
 			\clist_pop:NN \l_fingering_holes_clist \l_tmpa_tl
 			\int_case:nnTF {\l_tmpa_tl}{
-			{0}		{\node[top~double=0,]~at~(.15,-8/2)~{}; 
-					\node[bottom~double=0]~at~(-.15,-8.15/2)~{};}
-			{2}		{\node[top~double=1,]~at~(.15,-8/2)~{}; 
-					\node[bottom~double=1]~at~(-.15,-8.15/2)~{};}
-			{1}		{\node[top~double=1,]~at~(.15,-8/2)~{}; 
-					\node[bottom~double=0]~at~(-.15,-8.15/2)~{};}
+			{0}		{\node[top~double=0,]~at~
+						(\c_fingering_six_seven_x_tl,-\c_fingering_seven__top_tl)~{}; 
+					\node[bottom~double=0]~at~
+						(-\c_fingering_six_seven_x_tl,-\c_fingering_seven_bot_tl)~{};}
+			{2}		{\node[top~double=1,]~at~
+						(\c_fingering_six_seven_x_tl,-\c_fingering_seven__top_tl)~{}; 
+					\node[bottom~double=1]~at~
+						(-\c_fingering_six_seven_x_tl,-\c_fingering_seven_bot_tl)~{};}
+			{1}		{\node[top~double=1,]~at~
+						(\c_fingering_six_seven_x_tl,-\c_fingering_seven__top_tl)~{}; 
+					\node[bottom~double=0]~at~
+						(-\c_fingering_six_seven_x_tl,-\c_fingering_seven_bot_tl)~{};}
 					}
 			{}
 			{}
@@ -158,9 +170,26 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 			\clist_if_empty:NTF \l_fingering_holes_clist
 				{}
 				{\clist_pop:NN \l_fingering_holes_clist \l_tmpa_tl
-				\node[hole=\l_tmpa_tl]~at~(0,-9/2)~{};}
+				\node[hole=\l_tmpa_tl]~at~(0,-\c_fingering_bell_tl)~{};}
 		\end{tikzpicture}}
 		}
+
+% Definitions of the hole positions. To be used to add trill notation.
+	
+\tl_const:Nn \c_fingering_thumb_tl {0.5}
+\tl_const:Nn \c_fingering_one_tl {1.0}
+\tl_const:Nn \c_fingering_two_tl {1.5}
+\tl_const:Nn \c_fingering_three_tl {2.0}
+\tl_const:Nn \c_fingering_four_tl {2.5}
+\tl_const:Nn \c_fingering_five_tl {3.0}
+\tl_const:Nn \c_fingering_six_seven_x_tl {0.15}
+\tl_const:Nn \c_fingering_six_top_tl {3.5}
+\tl_const:Nn \c_fingering_six_bot_tl {3.575}
+\tl_const:Nn \c_fingering_seven__top_tl {4.0}
+\tl_const:Nn \c_fingering_seven_bot_tl {4.075}
+\tl_const:Nn \c_fingering_bell_tl {4.5}
+
+
 
 % create variable version of the command
 \cs_generate_variant:Nn \fingering_generate_fingering:n { V }

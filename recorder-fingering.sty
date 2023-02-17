@@ -25,9 +25,9 @@
 %
 % recorder-fingering.tex, recorder-fingering.pdf
 %
-% Version 1.0 2023/02/16
+% Version 1.0 2023/02/17
 \NeedsTeXFormat{LaTeX2e}[2022/12/01]
-\ProvidesPackage{recorder-fingering}[2023/02/16 v1.0 Recorder fingering diagrams]
+\ProvidesPackage{recorder-fingering}[2023/02/17 v1.0 Recorder fingering diagrams]
 \RequirePackage{tikz} 
 \usetikzlibrary{calc} 
 \RequirePackage{graphicx} 
@@ -65,8 +65,8 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 
 % Error messages
 \msg_new:nnnn {recorder-fingering}{too-few}{\\You\ haven't\ provided\ enough\ holes!}{Fingerings\ must\ specify\ all\ 8\ holes\ (thumb\ +\ all\ 7\ fingers)}
-\msg_new:nnnn {recorder-fingering}{key-exists}{\\This\ fingering\ is\ already\ defined!}{Use\ AddFingerings\ instead\ to\ override\ existing\ fingerings}
-\msg_new:nnnn {recorder-fingering}{wrong-instrument}{\\This\ command\ only\ permits\ alto\ and\ soprano\ fingerings!}{}
+\msg_new:nnnn {recorder-fingering}{key-exists}{\\This\ fingering\ is\ already\ defined!}{Use\ the\ starred\ version\ of\ the\ command\ or\ \token_to_str:N \AddFingerings\ instead\ to\ override\ existing\ fingerings.}
+\msg_new:nnnn {recorder-fingering}{wrong-instrument}{\\This\ command\ only\ permits\ F\ and\ C\ fingerings!}{}
 \msg_new:nnnn {recorder-fingering}{deprecated}{\\This\ command\ is\ deprecated.\ Please\ use\  \token_to_str:N \alto\ or\  \token_to_str:N \soprano\ instead.}{}
 
 % Command parameters
@@ -101,9 +101,12 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 			{\fingering_offset_zero:}
 }
 
-% Set up the property lists for alto and soprano fingerings
-\prop_new:N \l_fingering_alto_prop
-\prop_new:N \l_fingering_soprano_prop
+% Set up the property lists for F and C fingerings
+\prop_new:N \l_fingering_F_prop
+\prop_new:N \l_fingering_C_prop
+% Set up transposition tables for later
+\prop_new:N \l_fingering_C_to_F_prop
+\prop_new:N \l_fingering_F_to_C_prop
 
 % Set up the clists for the fingering vectors themselves
 \clist_new:N \l_fingering_fing_clist
@@ -165,16 +168,17 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 
 % Main user commands and synonyms
 % First basic commands to display the fingering for any note
-\NewDocumentCommand{\alto}{om}{
+\NewDocumentCommand{\Alto}{om}{
 \IfNoValueTF{#1}
 	{\keys_set:nn {fingering / command} {width = \g_fingering_size_dim}
 	 \bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}}
 	{\bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}
 	\keys_set:nn {fingering /command } {#1}}
-	\prop_get:NnN \l_fingering_alto_prop {#2} \l_tmpa_tl
+	\prop_get:NnN \l_fingering_F_prop {#2} \l_tmpa_tl
 	\fingering_generate_fingering:V \l_tmpa_tl
 }
-\cs_set_eq:NN \sopranino \alto
+\cs_set_eq:NN \sopranino \Alto
+\cs_set_eq:NN \bass \Alto
 
 \NewDocumentCommand{\soprano}{om}{
 \IfNoValueTF{#1}
@@ -182,7 +186,7 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 	 \bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}}
 	{\bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}
 	\keys_set:nn {fingering /command } {#1}}
-	\prop_get:NnN \l_fingering_soprano_prop {#2} \l_tmpa_tl
+	\prop_get:NnN \l_fingering_C_prop {#2} \l_tmpa_tl
 	\fingering_generate_fingering:V \l_tmpa_tl
 }
 \cs_set_eq:NN \tenor \soprano
@@ -192,8 +196,8 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 % This command will override existing fingerings
 \NewDocumentCommand{\AddFingerings}{mm}{
 	\str_case:nnTF {#1}{
-	{alto} {\prop_set_from_keyval:Nn \l_fingering_alto_prop {#2}}
-	{soprano}{\prop_set_from_keyval:Nn \l_fingering_soprano_prop {#2}}
+	{F} {\prop_put_from_keyval:Nn \l_fingering_F_prop {#2}}
+	{C}{\prop_put_from_keyval:Nn \l_fingering_C_prop {#2}}
 	}
 	{}
 	{\msg_error:nn { recorder-fingering }{ wrong-instrument}}
@@ -201,20 +205,24 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 
 % Second individual fingerings for alto and soprano
 % These commands will throw an error if the note is already defined
-\NewDocumentCommand{\NewAltoFingering}{mm}{
-	\prop_get:NnNTF \l_fingering_alto_prop {#1} \tl_tmpa_tl
+\NewDocumentCommand{\NewFfingering}{smm}{
+\IfBooleanTF{#1}
+	{\prop_put:Nnn \l_fingering_F_prop {#2} {#3}}
+	{\prop_get:NnNTF \l_fingering_F_prop {#2} \tl_tmpa_tl
 	{\msg_error:nn { recorder-fingering } { key-exists }}
-	{\prop_put:Nnn \l_fingering_alto_prop {#1} {#2}}
-	}
+	{\prop_put:Nnn \l_fingering_F_prop {#2} {#3}}
+	}}
 	
-\NewDocumentCommand{\NewSopranoFingering}{mm}{
-	\prop_get:NnNTF \l_fingering_alto_prop {#1} \tl_tmpa_tl
+\NewDocumentCommand{\NewCfingering}{smm}{
+\IfBooleanTF{#1}
+	{\prop_put:Nnn \l_fingering_C_prop {#2} {#3}}
+	{\prop_get:NnNTF \l_fingering_C_prop {#2} \tl_tmpa_tl
 	{\msg_error:nn { recorder-fingering } { key-exists }}
-	{\prop_put:Nnn \l_fingering_alto_prop {#1} {#2}}
-	}
+	{\prop_put:Nnn \l_fingering_C_prop {#2} {#3}}
+	}}
 
 % Now add all of the basic fingerings
-\AddFingerings{alto}{
+\AddFingerings{F}{
 		F = {1,1,1,1,1,1,2,2}, 
 		Gb = {1,1,1,1,1,1,2,1}, 
 		G = {1,1,1,1,1,1,2,0}, 
@@ -244,7 +252,7 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 		g' = {t,1,0,1,1,0,2,2}, 
 		ab' = {t,0,1,1,0,1,2,0} 
 	} 
-\AddFingerings{soprano}{
+\AddFingerings{C}{
 		C = {1,1,1,1,1,1,2,2},
 		Db = {1,1,1,1,1,1,2,1}, 
 		D = {1,1,1,1,1,1,2,0}, 
@@ -271,8 +279,73 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 		b = {t,1,1,0,1,1,0,0}, 
 		c' = {t,1,0,0,1,1,0,0}, 
 		db' = {t,1,0,1,1,0,2,2,1}, 
-		d' = {t,1,0,1,1,0,2,2}
-} 
+		d' = {t,1,0,1,1,0,2,2},
+		eb' = {t,0,1,1,0,1,2,0}
+}
+
+% Transposition tables (may be useful; currently not used)
+\prop_set_from_keyval:Nn \l_fingering_F_to_C_prop {
+		F = {C},
+		Gb = {Db},
+		G = {D},
+		Ab = {Eb},
+		A = {E},
+		Bb = {F},
+		B = {Gb},
+		C = {G},
+		Db = {Ab},
+		D = {A},
+		Eb = {Bb},
+		E = {B},
+		f = {c},
+		gb = {db},
+		g = {d},
+		ab = {eb},
+		a = {e},
+		bb = {f},
+		b = {gb},
+		c = {g},
+		db = {ab},
+		d = {a},
+		eb = {bb},
+		e = {b},
+		f' = {c'},
+		gb' = {db'},
+		g' = {d'},
+		ab' = {eb'}
+	}
+	
+\prop_set_from_keyval:Nn \l_fingering_C_to_F_prop {		
+		C = {F},
+		Db = {Gb},
+		D = {G},
+		Eb = {Ab},
+		E = {A},
+		F = {Bb},
+		Gb = {B},
+		G = {C},
+		Ab = {Db},
+		A = {D},
+		Bb = {Eb},
+		B = {E},
+		c = {f},
+		db = {gb},
+		d = {g},
+		eb = {ab},
+		e = {a},
+		f = {bb},
+		gb = {b},
+		g = {c},
+		ab = {db},
+		a = {d},
+		bb = {eb},
+		b = {e},
+		c' = {f'},
+		db' = {gb'},
+		d' = {g'},
+		eb' = {ab'}
+ }
+
 
 % Backwards (in)compatibility with the initial version of the package
 

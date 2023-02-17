@@ -26,7 +26,7 @@
 % recorder-fingering.tex, recorder-fingering.pdf
 %
 % Version 1.0 2023/02/17
-\NeedsTeXFormat{LaTeX2e}[2022/12/01]
+\NeedsTeXFormat{LaTeX2e}[2022/11/01]
 \ProvidesPackage{recorder-fingering}[2023/02/17 v1.0 Recorder fingering diagrams]
 \RequirePackage{tikz} 
 \usetikzlibrary{calc} 
@@ -177,10 +177,10 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 	\prop_get:NnN \l_fingering_F_prop {#2} \l_tmpa_tl
 	\fingering_generate_fingering:V \l_tmpa_tl
 }
-\cs_set_eq:NN \sopranino \Alto
-\cs_set_eq:NN \bass \Alto
+\cs_set_eq:NN \Sopranino \Alto
+\cs_set_eq:NN \Bass \Alto
 
-\NewDocumentCommand{\soprano}{om}{
+\NewDocumentCommand{\Soprano}{om}{
 \IfNoValueTF{#1}
 	{\keys_set:nn {fingering / command} {width = \g_fingering_size_dim}
 	 \bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}}
@@ -189,7 +189,7 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 	\prop_get:NnN \l_fingering_C_prop {#2} \l_tmpa_tl
 	\fingering_generate_fingering:V \l_tmpa_tl
 }
-\cs_set_eq:NN \tenor \soprano
+\cs_set_eq:NN \Tenor \Soprano
 
 % Now commands to add new fingerings: 
 % First, a note = { } version for multiple fingerings

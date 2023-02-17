@@ -1,25 +1,26 @@
 % !TEX TS-program = LuaLaTeXmk
 
 \documentclass[11pt]{article} 
-
 \usepackage{calc}
-\usepackage{parskip}
 \usepackage{fontspec}
 \usepackage[lmargin=.75in,rmargin=.75in,tmargin=1in,bmargin=1in]{geometry}
 \usepackage{titling}
-\usepackage{array, booktabs, multicol, fancyhdr,tabularx}
+\usepackage{array, booktabs,tabularx}
 \usepackage{enumitem}
-\usepackage{fancyvrb,listings,url}
+\usepackage{fancyvrb}
+\usepackage{listings}
+\usepackage{url}
 \usepackage[sf,small]{titlesec}
 \usepackage[section]{placeins}
 \usepackage[colorlinks=true]{hyperref}
 \setmonofont{Inconsolatazi4}
 \usepackage{recorder-fingering}
+\usepackage{parskip}
 \usepackage{musixtex}
 \input musixlyr
 \usetikzlibrary{tikzmark}
 \usetikzlibrary{positioning}
-\NewDocumentCommand{\addf}{m}{\tikz[remember picture]{\node[overlay,above=of pic cs:#1]{\soprano{#1}};}}
+\NewDocumentCommand{\addf}{m}{\tikz[remember picture]{\node[overlay,above=of pic cs:#1]{\Soprano{#1}};}}
 \DefineShortVerb{\|}
 \title{The \texttt{recorder-fingering} package}
 \author{Alan Munn\\amunn@msu.edu}
@@ -38,47 +39,42 @@
 }
   
 \newcommand*{\pkg}[1]{\texttt{#1}}
+\newcolumntype{t}{>{\ttfamily}r}
+\newcolumntype{T}{>{\ttfamily}c}
 \newcommand*{\bs}{\textbackslash}
 \setlength{\droptitle}{-1in}
-\setdescription{font={\normalfont}}
+\renewcommand{\abstractname}{\sffamily Abstract}
 
-\lhead{}
-\chead{}
-\rhead{}
-\lfoot{\emph{}}
-\cfoot{\thepage}
-\rfoot{}
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\footrulewidth}{0pt}
-\pagestyle{fancy}
 
 
 \begin{document}
 \maketitle
 \thispagestyle{empty}
-\renewcommand{\abstractname}{\sffamily Abstract}
-\abstract{\noindent\begin{quote}
+\begin{abstract}{\noindent
 The |recorder-fingering| package provides support for generating fingering diagrams for baroque fingering recorders. Standard fingerings are provided for recorders in both C and F, although with methods to create and display alternate fingerings for trills, etc. 
-\end{quote}}
+}
+\end{abstract}
 
 
 \section{Display commands}
-This package provides four commands (|\sopranino|, |\soprano|, |\Alto|, and |\tenor|)\footnote{Because some font packages define a command \texttt{\bs alto} the command for alto fingerings must be captialized.}  which will produce a fingering diagram for any note in the playable range of that recorder. At present, there are no differences between the two F recorders (sopranino and alto) and the two C recorders (soprano and tenor). Example: |\alto{F}| will produce a fingering diagram for the low F on an alto. 
+This package provides five commands (|\Sopranino|, |\Soprano|, |\Alto|, |\Tenor|, and |\Bass|)\footnote{Because \pkg{musixtex} defines commands \pkg{\bs alto} and \pkg{\bs bass} the fingering display commands are capitalized.}  which will produce a fingering diagram for any note in the playable range of that recorder. At present, there are no differences between the three F recorders (sopranino, alto, and bass) and the two C recorders (soprano and tenor), so the different command names are simply there for convenience. 
+
 
 \begin{table}[htpb]
 \centering
-\begin{tabularx}{.8\textwidth}{>{\ttfamily}rX}
+\begin{tabularx}{.8\textwidth}{tX}
 \toprule
-\bs sopranino [<parameters>]\{<note>\} & Display a fingering diagram for note in F\\
-\bs soprano [<parameters>]\{<note>\} & Display a fingering diagram for note in C\\
+\bs Sopranino [<parameters>]\{<note>\} & Display a fingering diagram for note in F\\
+\bs Soprano [<parameters>]\{<note>\} & Display a fingering diagram for note in C\\
 \bs Alto [<parameters>]\{<note>\} & Display a fingering diagram for note in F\\
-\bs tenor [<parameters>]\{<note>\} & Display a fingering diagram for note in C\\
+\bs Tenor [<parameters>]\{<note>\} & Display a fingering diagram for note in C\\
+\bs Bass [<parameters>]\{<note>\} & Display a fingering diagram for note in F\\
 \bottomrule
 \end{tabularx}
 \caption{Display commands}
 \end{table}
 \subsection{Note ranges and notation\label{Notes}}
-The notes range from C–Eb for recorders in C (|\soprano| and |\tenor|) or F–Ab for recorders in F (|\sopranino| and |\Alto|).
+The notes range from C–Eb for recorders in C (|\Soprano| and |\Tenor|) or F–Ab for recorders in F (|\Sopranino| and |\Alto|).
 
 Notes are noted as C-B (first octave) c-b (second octave) and c'–eb' (third octave) with an equivalent scheme starting at F for the recorders in F.
 \subsection{Display parameters}
@@ -86,7 +82,7 @@ Each display command allows two display parameters to be set.
 
 \begin{table}[htpb]
 \centering
-\begin{tabularx}{.8\textwidth}{>{\ttfamily}rX}
+\begin{tabularx}{.9\textwidth}{tX}
 \toprule
 thumboffset = <true/false> & Display the thumb hole offset or not (default = \pkg{true})\\
 width = <length> & Width of the diagram (default = \pkg{20pt}). Height adjusts proportionally\\
@@ -95,12 +91,20 @@ width = <length> & Width of the diagram (default = \pkg{20pt}). Height adjusts p
 \caption{Display parameters}
 \end{table}
 
-The |width| parameter sets the width of the diagram; it defaults to |20pt| for the default thumb offset diagrams. If you set |thumboffset=false| you will probably want to choose a smaller value e.g. |12pt|.
+The |width| parameter sets the width of the diagram; it defaults to |20pt| for the default thumb offset diagrams. If you set |thumboffset=false| you will probably want to choose a smaller value e.g. |10pt|.
 
 You can set the parameters individually for any particular display command, but most likely you'll want global settings. To set the parameters globally use the command |\fingeringSetup|
 
 e.g. |\fingeringSetup{width=12pt,thumboffset=false}| makes all diagrams use an inline thumb hole and 12pt width.
-
+\begin{table}[htpb]
+\centering
+\begin{tabular}{TT}
+\pkg{\bs Alto\{c\}} & \pkg{\bs Soprano[width=10pt,thumboffset=false]\{f\}}\\
+\\
+\Alto{c} & \Soprano[width=10pt,thumboffset=false]{f}
+\end{tabular}
+\caption{Example fingering commands}
+\end{table}
 \section{Producing new fingerings}
 
 There are three commands to add new fingerings to the predefined list, or in fact, to change the existing defaults.
@@ -111,7 +115,7 @@ Fingerings are specified using an 8 (and possibly 9) element comma separated lis
 
 \begin{table}[htpb]
 \centering
-\begin{tabularx}{.8\textwidth}{>{\ttfamily}rX}
+\begin{tabularx}{.8\textwidth}{tX}
 \toprule
 0 &  open hole\\
 1 &  closed hole (positions 0-5); single closed hole (positions 6,7)\\
@@ -134,12 +138,12 @@ The third command is designed to enter a set of new fingerings at once. It will 
 \toprule
 \texttt{\bs NewFfingering\{<notename>\}\{<fingering vector>\}} \\\rule{3em}{0pt}Add a new note and fingering to the F recorder set\\
 \texttt{\bs NewCfingering\{<notename>\}\{<fingering vector>\}} \\\rule{3em}{0pt} Add a new note and fingering to the C recorder set\\
-\texttt{\bs AddFingerings\{<key>\}\{<note = \{<fingering vector>\}} \\\rule{3em}{0pt} Add a set of new fingerings to the F or C recorder set\\
+\texttt{\bs AddFingerings\{<key>\}\{<note = \{<fingering vector>\}\}} \\\rule{3em}{0pt} Add a set of new fingerings to the F or C recorder set\\
 \bottomrule
 \end{tabularx}
 \caption{Commands for adding new fingerings}
 \end{table}
-\clearpage
+%\clearpage
 \subsection{New fingering examples}
 \NewFfingering{ABbtrill}{0,1,1,1,1,1,0,0}
 \AddFingerings{C}{
@@ -150,7 +154,6 @@ The third command is designed to enter a set of new fingerings at once. It will 
 \NewFfingering{ABbtrill}{0,1,1,1,1,1,0,0}
 \Alto{ABbtrill}
 \end{lstlisting}
-\hfill
 \Alto{ABbtrill}
 
 \begin{lstlisting}
@@ -158,12 +161,12 @@ The third command is designed to enter a set of new fingerings at once. It will 
 	EFtrill = {0,1,1,1,1,1,0,0},
 	altd = {0,1,1,1,1,1,2,2}
 }
-\soprano{EFtrill}
-\soprano{altd}
+\Soprano{EFtrill}
+\Soprano{altd}
 \end{lstlisting}
-\hfill
-\soprano{EFtrill}
-\soprano{altd}
+
+\Soprano{EFtrill}
+\Soprano{altd}
 
 \section{Version History}
 Version 0.5 of this package (the initial version) was in response to a \href{https://tex.stackexchange.com/q/674847/2693}{TeX.se question} and used a substantially different set of user commands. The current version (1.0) is more flexible and has a more useable user interface.  Bug reports and feature requests are welcome at the \href{https://github.com/amunn/recorder-fingering/issues}{GitHub bug tracker}. 
@@ -173,23 +176,22 @@ This is my first attempt to write a package using |expl3|. Thanks to Jonathan P.
 \section{Samples} The chart below shows all of the possible fingerings. 
 
 \section*{Recorder in C soprano chart}
-\parindent=0pt
 \begin{tabular}{cccccccccccc}
 \toprule
 C & Db & D & Eb & E & F & Gb & G & Ab & A & Bb & B\\ 
 \midrule
-\soprano{C} & 
-\soprano{Db} & 
-\soprano{D} & 
-\soprano{Eb} & 
-\soprano{E} &
-\soprano{F} &
-\soprano{Gb} &
-\soprano{G} &
-\soprano{Ab} &
-\soprano{A} &
-\soprano{Bb} &
-\soprano{B}\\
+\Soprano{C} & 
+\Soprano{Db} & 
+\Soprano{D} & 
+\Soprano{Eb} & 
+\Soprano{E} &
+\Soprano{F} &
+\Soprano{Gb} &
+\Soprano{G} &
+\Soprano{Ab} &
+\Soprano{A} &
+\Soprano{Bb} &
+\Soprano{B}\\
 \bottomrule
 \end{tabular}
 
@@ -198,18 +200,18 @@ C & Db & D & Eb & E & F & Gb & G & Ab & A & Bb & B\\
 \toprule
 c & db & d & eb & e & f & gb & g & ab & a & bb & b\\ 
 \midrule
-\soprano{c} &
-\soprano{db} &
-\soprano{d} &
-\soprano{eb} &
-\soprano{e} &
-\soprano{f} &
-\soprano{gb} &
-\soprano{g} &
-\soprano{ab} &
-\soprano{a} &
-\soprano{bb} &
-\soprano{b}\\
+\Soprano{c} &
+\Soprano{db} &
+\Soprano{d} &
+\Soprano{eb} &
+\Soprano{e} &
+\Soprano{f} &
+\Soprano{gb} &
+\Soprano{g} &
+\Soprano{ab} &
+\Soprano{a} &
+\Soprano{bb} &
+\Soprano{b}\\
 \bottomrule
 \end{tabular}
 
@@ -223,19 +225,19 @@ Here's what the fingering diagrams look like with |thumboffset=false|:
 \toprule
 c' & db' & d' & eb'\\
 \midrule
-\soprano{c'} &
-\soprano{db'} &
-\soprano{d'} &
-\soprano{eb'}\\
+\Soprano{c'} &
+\Soprano{db'} &
+\Soprano{d'} &
+\Soprano{eb'}\\
 \bottomrule
 \end{tabular}
+\clearpage
 \section{Using in conjunction with \texttt{musixtex}}
 \fingeringSetup{thumboffset=true,width=12pt}
-It's simple to add fingerings on top of musical excerpts created with |musixtex| using the |tikzmark| library to place the fingerings.  See the source of this document for how this was done:
+It's simple to add fingerings on top of musical excerpts created with |musixtex| using the |tikzmark| library to place the fingerings.  Here's a sample of what you can do, with the code below.
 
 \subsection*{C Maj scale Soprano/Tenor recorder fingerings}
-\vspace{\heightof{\soprano{C}}+\baselineskip}
-\begin{minipage}{\textwidth}
+\vspace{\heightof{\Soprano{C}}+\baselineskip}
 \begin{music}
 \setlyrics{scale}{C D E F G A B C}
 \lyrraise{1}{b-2ex}
@@ -248,6 +250,27 @@ It's simple to add fingerings on top of musical excerpts created with |musixtex|
 \zendextract
 \end{music}
 \addf{C}\addf{D}\addf{E}\addf{E}\addf{F}\addf{G}\addf{A}\addf{B}\addf{c}
-\end{minipage}
-
+\begin{lstlisting}
+%\usetikzlibrary{tikzmark} % in document premable
+%\usetikzlibrary{positioning} % in document preamble
+%\usepackage{calc} % in document preamble
+% Helper command to place each fingering
+\NewDocumentCommand{\addf}{m}{\tikz[remember picture]{\node[overlay,above=of pic cs:#1]{\Soprano{#1}};}}
+% add vertical space for the height of the diagram 
+\vspace{\heightof{\Soprano{C}}+\baselineskip}
+\begin{music}
+\setlyrics{scale}{C D E F G A B C}
+\lyrraise{1}{b-2ex}
+\assignlyrics{1}{scale}
+\startextract
+\NOTEs
+% add \tikzmark for before each note
+\tikzmark{C}\wh{c}\tikzmark{D}\wh{d}\tikzmark{E}\wh{e}\tikzmark{F}\wh{f}
+\tikzmark{G}\wh{g}\tikzmark{A}\wh{h}\tikzmark{B}\wh{i}\tikzmark{c}\wh{j}
+\en
+\zendextract
+\end{music}
+% use the helper function to add the fingerings (requires two compilations)
+\addf{C}\addf{D}\addf{E}\addf{E}\addf{F}\addf{G}\addf{A}\addf{B}\addf{c}
+\end{lstlisting}
 \end{document} 

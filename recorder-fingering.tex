@@ -24,7 +24,7 @@
 \DefineShortVerb{\|}
 \title{The \texttt{recorder-fingering} package}
 \author{Alan Munn\\amunn@msu.edu}
-\date{Version 1.0\\February 17, 2023}
+\date{Version 1.1\\February 19, 2023}
   
 \lstset{%
     basicstyle=\ttfamily\small,
@@ -39,7 +39,7 @@
 }
   
 \newcommand*{\pkg}[1]{\texttt{#1}}
-\newcolumntype{t}{>{\ttfamily}r}
+\newcolumntype{t}[1]{>{\ttfamily}#1}
 \newcolumntype{T}{>{\ttfamily}c}
 \newcommand*{\bs}{\textbackslash}
 \setlength{\droptitle}{-1in}
@@ -62,7 +62,7 @@ This package provides five commands (|\Sopranino|, |\Soprano|, |\Alto|, |\Tenor|
 
 \begin{table}[htpb]
 \centering
-\begin{tabularx}{.8\textwidth}{tX}
+\begin{tabularx}{.8\textwidth}{t{r}X}
 \toprule
 \bs Sopranino [<parameters>]\{<note>\} & Display a fingering diagram for note in F\\
 \bs Soprano [<parameters>]\{<note>\} & Display a fingering diagram for note in C\\
@@ -82,10 +82,13 @@ Each display command allows two display parameters to be set.
 
 \begin{table}[htpb]
 \centering
-\begin{tabularx}{.9\textwidth}{tX}
+\begin{tabularx}{.9\textwidth}{t{l}X}
 \toprule
 thumboffset = <true/false> & Display the thumb hole offset or not (default = \pkg{true})\\
 width = <length> & Width of the diagram (default = \pkg{20pt}). Height adjusts proportionally\\
+trill = \{<list of holes>\} & add a trill arrow at each hole position in the list\\
+trilldir = <L/R/LR> & trill arrows uniformly to the Left or Right, or top 3 holes L, bottom 4 holes R\\
+trillpointer = {<L pointer,R pointer>} & changes the left and right pointers for trills\\
 \bottomrule
 \end{tabularx}
 \caption{Display parameters}
@@ -93,15 +96,21 @@ width = <length> & Width of the diagram (default = \pkg{20pt}). Height adjusts p
 
 The |width| parameter sets the width of the diagram; it defaults to |20pt| for the default thumb offset diagrams. If you set |thumboffset=false| you will probably want to choose a smaller value e.g. |10pt|.
 
+The |trill| parameter sets an arrow pointing to a hole (numbered 1-7 from the top hole). This parameter is only defined when using the display commands. It will place an arrow on the side specified by |trilldir| at a single hole or comma separated list of holes. e.g. |trill=3| sets an arrow at hole 3, |trill={6,7}| sets arrows at holes 6 and 7.
+
+The trill arrow direction can be specified using the |trilldir| parameter. Setting it to |L| places all arrows on the left, setting it to |R| places all arrows on the right. Setting it to |LR| places arrows to the left on holes 1-3 and on the right on holes 4-7.
+
+The |trillpointer| parameter sets the left and right trill pointers.  (Not yet implemented).
+
 You can set the parameters individually for any particular display command, but most likely you'll want global settings. To set the parameters globally use the command |\fingeringSetup|
 
 e.g. |\fingeringSetup{width=12pt,thumboffset=false}| makes all diagrams use an inline thumb hole and 12pt width.
 \begin{table}[htpb]
 \centering
-\begin{tabular}{TT}
-\pkg{\bs Alto\{c\}} & \pkg{\bs Soprano[width=10pt,thumboffset=false]\{f\}}\\
+\begin{tabular}{TTT}
+\bs Alto\{c\} & \bs Soprano[width=10pt,thumboffset=false]\{f\} & \bs Alto[trill=3]\{C\}\\
 \\
-\Alto{c} & \Soprano[width=10pt,thumboffset=false]{f}
+\Alto{c} & \Soprano[width=10pt,thumboffset=false]{f} & \Alto[trill=3]{C}
 \end{tabular}
 \caption{Example fingering commands}
 \end{table}
@@ -115,7 +124,7 @@ Fingerings are specified using an 8 (and possibly 9) element comma separated lis
 
 \begin{table}[htpb]
 \centering
-\begin{tabularx}{.8\textwidth}{tX}
+\begin{tabularx}{.8\textwidth}{t{r}X}
 \toprule
 0 &  open hole\\
 1 &  closed hole (positions 0-5); single closed hole (positions 6,7)\\

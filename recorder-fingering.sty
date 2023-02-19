@@ -30,7 +30,8 @@
 \ProvidesPackage{recorder-fingering}[2023/02/17 v1.0 Recorder fingering diagrams]
 \RequirePackage{tikz} 
 \usetikzlibrary{calc} 
-\RequirePackage{graphicx} 
+\RequirePackage{graphicx}
+% First set up TikZ styles for the diagrams
 % Split node code from 
 % https://tex.stackexchange.com/a/657282/2693
 % These styles are local to the package
@@ -62,27 +63,44 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 }}
 \ExplSyntaxOn
 
-
 % Error messages
 \msg_new:nnnn {recorder-fingering}{too-few}{\\You\ haven't\ provided\ enough\ holes!}{Fingerings\ must\ specify\ all\ 8\ holes\ (thumb\ +\ all\ 7\ fingers)}
 \msg_new:nnnn {recorder-fingering}{key-exists}{\\This\ fingering\ is\ already\ defined!}{Use\ the\ starred\ version\ of\ the\ command\ or\ \token_to_str:N \AddFingerings\ instead\ to\ override\ existing\ fingerings.}
 \msg_new:nnnn {recorder-fingering}{wrong-instrument}{\\This\ command\ only\ permits\ F\ and\ C\ fingerings!}{}
 \msg_new:nnnn {recorder-fingering}{deprecated}{\\This\ command\ is\ deprecated.\ Please\ use\  \token_to_str:N \alto\ or\  \token_to_str:N \soprano\ instead.}{}
+\msg_new:nnnn {recorder-fingering}{no-hole}{\\The\ recorder\ does't\ have\ enough\ holes\ to\ trill\ here.\ Please\ use\ hole\ numbers\ between\ 1\ and\ 7!}{}
 
-% Command parameters
-\keys_define:nn {fingering}{
-	thumboffset.bool_set:N = \g_fingering_thumboffset_bool,
-	width.dim_set:N = \g_fingering_size_dim,
-	thumboffset.initial:n = {true},
-	width.initial:n = {20pt}
-}
-\keys_define:nn {fingering / command}{
-	thumboffset.bool_set:N = \g_fingering_command_thumboffset_bool,
-	width.dim_set:N = \l_fingering_command_size_dim,
-}
-\NewDocumentCommand{\fingeringSetup}{m}{
-	\keys_set:nn {fingering} {#1}
-}
+% Set up the property lists for F and C fingerings
+\prop_new:N \l_fingering_F_prop
+\prop_new:N \l_fingering_C_prop
+% Set up transposition tables for later
+\prop_new:N \l_fingering_C_to_F_prop
+\prop_new:N \l_fingering_F_to_C_prop
+
+% Set up the clists for the fingering vectors themselves
+\clist_new:N \l_fingering_fing_clist
+\clist_new:N \l_fingering_topholes_clist
+
+% Set up the trill holes clist
+\clist_new:N \l_fingering_trill_holes_clist
+
+
+% Definitions of the hole positions. To be used to add trill notation.
+	
+\tl_const:Nn \c_fingering_thumb_tl {0.5}
+\tl_const:Nn \c_fingering_one_tl {1.0}
+\tl_const:Nn \c_fingering_two_tl {1.5}
+\tl_const:Nn \c_fingering_three_tl {2.0}
+\tl_const:Nn \c_fingering_four_tl {2.5}
+\tl_const:Nn \c_fingering_five_tl {3.0}
+\tl_const:Nn \c_fingering_six_seven_x_tl {0.15}
+\tl_const:Nn \c_fingering_six_top_tl {3.5}
+\tl_const:Nn \c_fingering_six_bot_tl {3.575}
+\tl_const:Nn \c_fingering_seven__top_tl {4.0}
+\tl_const:Nn \c_fingering_seven_bot_tl {4.075}
+\tl_const:Nn \c_fingering_bell_tl {4.5}
+\tl_set:Nn \l_fingering_trill_offset {.5}
+\tl_set:Nn \l_fingering_trill_pointer_tl {$\leftarrow$}
 
 % Manage the thumb offset parameters
 \tl_set:Nn \g_fingering_thumboffset_x {-.5}
@@ -101,16 +119,47 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 			{\fingering_offset_zero:}
 }
 
-% Set up the property lists for F and C fingerings
-\prop_new:N \l_fingering_F_prop
-\prop_new:N \l_fingering_C_prop
-% Set up transposition tables for later
-\prop_new:N \l_fingering_C_to_F_prop
-\prop_new:N \l_fingering_F_to_C_prop
+\bool_new:N \g_fingering_trill_offset_LR_TF
+\bool_new:N \l_fingering_command_trill_offset_LR
+\tl_new:N \g_fingering_trill_offset
+\tl_new:N \l_fingering_command_trill_offset
 
-% Set up the clists for the fingering vectors themselves
-\clist_new:N \l_fingering_fing_clist
-\clist_new:N \l_fingering_topholes_clist
+% Command parameters
+\keys_define:nn {fingering}{
+	thumboffset.bool_set:N = \g_fingering_thumboffset_bool,
+	width.dim_set:N = \g_fingering_size_dim,
+	thumboffset.initial:n = {true},
+	width.initial:n = {20pt},
+	trillpointer.tl_set:N = \g_fingering_trillpointer_tl,
+	trillpointer.initial:n = {$\leftarrow$},
+	trilldir.choice:,
+		trilldir / L .code:n = 
+			{\bool_set_false:N \g_fingering_trill_offset_LR
+			\tl_set:Nn \g_fingering_trill_offset {-.5}},
+		trilldir / R .code:n = 
+			{\bool_set_false:N \g_fingering_trill_offset_LR
+			\tl_set:Nn \l_fingering_trill_offset {.5}},
+		trilldir / LR .code:n = {\bool_set_true:N \g_fingering_trill_offset_LR }
+}
+\keys_define:nn {fingering / command}{
+	thumboffset.bool_set:N = \g_fingering_command_thumboffset_bool,
+	width.dim_set:N = \l_fingering_command_size_dim,
+	trill.clist_set:N = \l_fingering_trill_holes_clist,
+	trillpointer.tl_set:N = \l_fingering_command_trill_pointer_tl,
+	trilldir.choice:,
+		trilldir / L .code:n = 
+			{\bool_set_false:N \l_fingering_command_trill_offset_LR
+			\tl_set:Nn \l_fingering_command_trill_offset {-.5}
+			\tl_set:Nn \l_fingering_command_trill_pointer_tl {$\rightarrow$}},
+		trilldir / R .code:n = 
+			{\bool_set_false:N \l_fingering_command_trill_offset_LR
+			\tl_set:Nn \l_fingering_command_trill_offset {.5}
+			\tl_set:Nn \l_fingering_command_trill_pointer_tl {$\leftarrow$}},
+		trilldir / LR .code:n = {\bool_set_true:N \l_fingering_command_trill_offset_LR}
+	}
+\NewDocumentCommand{\fingeringSetup}{m}{
+	\keys_set:nn {fingering} {#1}
+}
 
 
 % Generic fingering generator: takes a clist, splits it between top holes and bottom holes
@@ -171,38 +220,55 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 				{}
 				{\clist_pop:NN \l_fingering_holes_clist \l_tmpa_tl
 				\node[hole=\l_tmpa_tl]~at~(0,-\c_fingering_bell_tl)~{};}
+% display trill arrows if present
+			\clist_if_empty:NTF \l_fingering_trill_holes_clist
+				{}
+				{
+				\clist_map_variable:NNn \l_fingering_trill_holes_clist \l_tmpa_tl
+					{\int_compare:nNnTF {\l_tmpa_tl} > {7}
+						{\msg_warning:nn { recorder-fingering } { no-hole }}
+						{\bool_if:nTF {\l_fingering_command_trill_offset_LR}
+							{\int_compare:nNnTF {\l_tmpa_tl} > {3}
+								{\tl_set:Nn \l_fingering_command_trill_offset {.5}
+								\tl_set:Nn \l_fingering_command_trill_pointer_tl {$\leftarrow$}}
+								{\tl_set:Nn \l_fingering_command_trill_offset {-.5}
+								\tl_set:Nn \l_fingering_command_trill_pointer_tl {$\rightarrow$}}
+							}
+							{}
+						 \int_set:Nn \l_tmpb_int {\l_tmpa_tl+1}
+						 \node[overlay]~at~(\l_fingering_command_trill_offset,
+							-\l_tmpb_int/2)~{\l_fingering_command_trill_pointer_tl};
+						}
+					}
+				}
+				
 		\end{tikzpicture}}
 		}
 
-% Definitions of the hole positions. To be used to add trill notation.
-	
-\tl_const:Nn \c_fingering_thumb_tl {0.5}
-\tl_const:Nn \c_fingering_one_tl {1.0}
-\tl_const:Nn \c_fingering_two_tl {1.5}
-\tl_const:Nn \c_fingering_three_tl {2.0}
-\tl_const:Nn \c_fingering_four_tl {2.5}
-\tl_const:Nn \c_fingering_five_tl {3.0}
-\tl_const:Nn \c_fingering_six_seven_x_tl {0.15}
-\tl_const:Nn \c_fingering_six_top_tl {3.5}
-\tl_const:Nn \c_fingering_six_bot_tl {3.575}
-\tl_const:Nn \c_fingering_seven__top_tl {4.0}
-\tl_const:Nn \c_fingering_seven_bot_tl {4.075}
-\tl_const:Nn \c_fingering_bell_tl {4.5}
+
 
 
 
 % create variable version of the command
 \cs_generate_variant:Nn \fingering_generate_fingering:n { V }
 
+\cs_new:Nn \fingering_reset_keys: {
+	\keys_set:nn {fingering / command} {
+	width = \g_fingering_size_dim,
+	trill={},
+	trillpointer = \g_fingering_trillpointer_tl,
+	trilldir = L}
+	\bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}
+}
+	
 
 % Main user commands and synonyms
 % First basic commands to display the fingering for any note
 \NewDocumentCommand{\Alto}{om}{
+\fingering_reset_keys:
 \IfNoValueTF{#1}
-	{\keys_set:nn {fingering / command} {width = \g_fingering_size_dim}
-	 \bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}}
-	{\bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}
-	\keys_set:nn {fingering /command } {#1}}
+	{}
+	{\keys_set:nn {fingering /command } {#1}}
 	\prop_get:NnN \l_fingering_F_prop {#2} \l_tmpa_tl
 	\fingering_generate_fingering:V \l_tmpa_tl
 }
@@ -210,11 +276,10 @@ bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
 \cs_set_eq:NN \Bass \Alto
 
 \NewDocumentCommand{\Soprano}{om}{
+\fingering_reset_keys:
 \IfNoValueTF{#1}
-	{\keys_set:nn {fingering / command} {width = \g_fingering_size_dim}
-	 \bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}}
-	{\bool_set_eq:NN {\g_fingering_command_thumboffset_bool}{\g_fingering_thumboffset_bool}
-	\keys_set:nn {fingering /command } {#1}}
+	{}
+	{\keys_set:nn {fingering /command } {#1}}
 	\prop_get:NnN \l_fingering_C_prop {#2} \l_tmpa_tl
 	\fingering_generate_fingering:V \l_tmpa_tl
 }

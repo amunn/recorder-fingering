@@ -24,7 +24,7 @@
 \DefineShortVerb{\|}
 \title{The \texttt{recorder-fingering} package}
 \author{Alan Munn\\amunn@msu.edu}
-\date{Version 1.1\\February 19, 2023}
+\date{Version 1.1\\February 20, 2023}
   
 \lstset{%
     basicstyle=\ttfamily\small,
@@ -77,8 +77,10 @@ This package provides five commands (|\Sopranino|, |\Soprano|, |\Alto|, |\Tenor|
 The notes range from C–Eb for recorders in C (|\Soprano| and |\Tenor|) or F–Ab for recorders in F (|\Sopranino| and |\Alto|).
 
 Notes are noted as C-B (first octave) c-b (second octave) and c'–eb' (third octave) with an equivalent scheme starting at F for the recorders in F.
+
+Enharmonic notes are available for any of the flat/sharp notes (i.e., Db and C\#, etc. are both defined by default.)
 \subsection{Display parameters}
-Each display command allows two display parameters to be set.
+Fingering diagrams are customizable either globally using |\fingeringSetup{}| or locally as an optional argument passed to any individual command.  
 
 \begin{table}[htpb]
 \centering
@@ -86,21 +88,24 @@ Each display command allows two display parameters to be set.
 \toprule
 thumboffset = <true/false> & Display the thumb hole offset or not (default = \pkg{true})\\
 width = <length> & Width of the diagram (default = \pkg{20pt}). Height adjusts proportionally\\
-trill = \{<list of holes>\} & add a trill arrow at each hole position in the list\\
+LHRHdivider = <true/false> & Display a line separating the left and right hand holes (default = \pkg{true})\\
+LHRHspace = <length> & Space between the left hand and right hand holds (default = \pkg{10pt})\\
 trilldir = <L/R/LR> & trill arrows uniformly to the Left or Right, or top 3 holes L, bottom 4 holes R\\
-trillpointer = {<L pointer,R pointer>} & changes the left and right pointers for trills\\
+Lpointer = <left trill pointer> & changes the left pointer for trills\\
+Rpointer = <right trill pointer> & changes the right pointer for trills\\
+trill = \{<list of holes>\} & add a trill marker at each hole position in the list (local use only)\\
 \bottomrule
 \end{tabularx}
-\caption{Display parameters}
+\caption{Display options}
 \end{table}
 
 The |width| parameter sets the width of the diagram; it defaults to |20pt| for the default thumb offset diagrams. If you set |thumboffset=false| you will probably want to choose a smaller value e.g. |10pt|.
 
-The |trill| parameter sets an arrow pointing to a hole (numbered 1-7 from the top hole). This parameter is only defined when using the display commands. It will place an arrow on the side specified by |trilldir| at a single hole or comma separated list of holes. e.g. |trill=3| sets an arrow at hole 3, |trill={6,7}| sets arrows at holes 6 and 7.
+The |trill| parameter sets an arrow pointing to a hole (numbered 1-7 from the top hole). This parameter is only in effect when using the display commands. It will place an arrow on the side specified by |trilldir| at a single hole or comma separated list of holes. e.g. |trill=3| sets an arrow at hole 3, |trill={6,7}| sets arrows at holes 6 and 7.
 
 The trill arrow direction can be specified using the |trilldir| parameter. Setting it to |L| places all arrows on the left, setting it to |R| places all arrows on the right. Setting it to |LR| places arrows to the left on holes 1-3 and on the right on holes 4-7.
 
-The |trillpointer| parameter sets the left and right trill pointers.  (Not yet implemented).
+The |Lpointer| and |Rpointer| parameters set the left and right trill pointers. The default values are |Lpointer={$\rightarrow$}| and |Rpointer={$\leftarrow$}|.
 
 You can set the parameters individually for any particular display command, but most likely you'll want global settings. To set the parameters globally use the command |\fingeringSetup|
 
@@ -154,48 +159,54 @@ The third command is designed to enter a set of new fingerings at once. It will 
 \end{table}
 %\clearpage
 \subsection{New fingering examples}
-\NewFfingering{ABbtrill}{0,1,1,1,1,1,0,0}
+\NewFfingering{BbAtrill}{0,1,1,1,1,1,0,0}
 \AddFingerings{C}{
 	EFtrill = {0,1,1,1,1,1,0,0},
 	altd = {0,1,1,1,1,1,2,2}
 }
+\AddFingerings{F}{
+	agtrill = {0,0,1,1,1,1,0,0}}
 \begin{lstlisting}
-\NewFfingering{ABbtrill}{0,1,1,1,1,1,0,0}
-\Alto{ABbtrill}
+\NewFfingering{BbAtrill}{0,1,1,1,1,1,0,0}
+\Alto[trill=5]{BbAtrill}
 \end{lstlisting}
-\Alto{ABbtrill}
-
+\Alto[trill=5]{BbAtrill}
+\clearpage
 \begin{lstlisting}
 \AddFingerings{C}{
 	EFtrill = {0,1,1,1,1,1,0,0},
 	altd = {0,1,1,1,1,1,2,2}
+\AddFingerings{F}{
+	agtrill = {0,0,1,1,1,1,0,0}
 }
 \Soprano{EFtrill}
-\Soprano{altd}
+\Soprano{altd}\hfil
+\Alto{agtrill}\hfil
 \end{lstlisting}
 
-\Soprano{EFtrill}
-\Soprano{altd}
+\Soprano{EFtrill}\hfil
+\Soprano{altd}\hfil
+\Alto{agtrill}
 
 \section{Version History}
-Version 0.5 of this package (the initial version) was in response to a \href{https://tex.stackexchange.com/q/674847/2693}{TeX.se question} and used a substantially different set of user commands. The current version (1.0) is more flexible and has a more useable user interface.  Bug reports and feature requests are welcome at the \href{https://github.com/amunn/recorder-fingering/issues}{GitHub bug tracker}. 
+Version 0.5 of this package (the initial version) was in response to a \href{https://tex.stackexchange.com/q/674847/2693}{TeX.se question} and used a substantially different set of user commands. The current version (1.0) is more flexible and has a more useable user interface. Version 1.1 added support for trill annotation, and added a separation between the left and right hand holes. Bug reports and feature requests are welcome at the \href{https://github.com/amunn/recorder-fingering/issues}{GitHub bug tracker}. 
 \section{Acknowledgements}
-This is my first attempt to write a package using |expl3|. Thanks to Jonathan P. Spratte for suggesting how to split fingering vectors and the various LaTeX development team members (David Carlisle, Ulrike Fischer, Phelype Olenik and Joseph Wright) who have answered random |expl3| questions in the TeX.se chat. Thanks also to all the TeX.se users who have both asked and answered questions on the site. Your questions encourage new packages like this one and your answers help make the code better.
+This is my first attempt to write a package using |expl3|. Thanks to Jonathan P. Spratte for suggesting how to split fingering vectors and the various LaTeX development team members (David Carlisle, Ulrike Fischer, Phelype Olenik and Joseph Wright) who have answered random |expl3| questions in the TeX.se chat. Thanks to Bob Tennent, whose suggestions resulted in version 1.1.  Thanks also to all the TeX.se users who have both asked and answered questions on the site. Your questions encourage new packages like this one and your answers help make the code better.
 \clearpage
-\section{Samples} The chart below shows all of the possible fingerings. 
+\section{Samples} The chart below shows all of the possible fingerings.\footnote{Since the top row of the table represents the input name, \pkg{b} and  \pkg{\#} are used instead the proper symbols \flat\ and \sharp.}
 
 \section*{Recorder in C soprano chart}
 \begin{tabular}{cccccccccccc}
 \toprule
-C & Db & D & Eb & E & F & Gb & G & Ab & A & Bb & B\\ 
+C & C\# & D & Eb & E & F & F\# & G & Ab & A & Bb & B\\ 
 \midrule
 \Soprano{C} & 
-\Soprano{Db} & 
+\Soprano{C#} & 
 \Soprano{D} & 
 \Soprano{Eb} & 
 \Soprano{E} &
 \Soprano{F} &
-\Soprano{Gb} &
+\Soprano{F#} &
 \Soprano{G} &
 \Soprano{Ab} &
 \Soprano{A} &
@@ -207,7 +218,7 @@ C & Db & D & Eb & E & F & Gb & G & Ab & A & Bb & B\\
 \bigskip
 \begin{tabular}{cccccccccccc}
 \toprule
-c & db & d & eb & e & f & gb & g & ab & a & bb & b\\ 
+c & c\# & d & eb & e & f & f\# & g & ab & a & bb & b\\ 
 \midrule
 \Soprano{c} &
 \Soprano{db} &
@@ -232,7 +243,7 @@ Here's what the fingering diagrams look like with |thumboffset=false|:
 
 \begin{tabular}{cccc}
 \toprule
-c' & db' & d' & eb'\\
+c' & c\#' & d' & eb'\\
 \midrule
 \Soprano{c'} &
 \Soprano{db'} &

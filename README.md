@@ -1,8 +1,8 @@
 # recorder-fingering
 
-Version 1.0 February 17, 2023
+Version 1.1 February 20, 2023
 
-LaTeX package for recorder fingering diagrams. Support for all standard F and C recorder fingerings, with the ability to add new fingerings as needed.
+The `recorder-fingering` package provides support for generating fingering diagrams for baroque fingering recorders. Standard fingerings are provided for recorders in both C and F, along with methods to create and display alternate fingerings for trills, etc. 
 
 # Sample of what you can do with it:
 

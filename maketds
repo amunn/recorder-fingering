@@ -1,3 +1,3 @@
 find . \( -name  '*.aux' -o -name '*.lot' -o -name '*.lof' -o -name '*.lob' -o -name '*.log' -o -name '*.bbl' -o -name '*.blg'  -o -name '*.toc' -o -name '*.fdb_latexmk' -o -name '*.fls' -o -name '*.bcf' -o -name '*.nav' -o -name '*.out' -o -name '*.run.xml' -o -name '*.snm' -o -name '*.dvi' -o -name '*.synctex*' -o -name '*.lol' -o -name '*.loa' -o -name '*.kta' -o -name '*.4ct' -o -name '*.4tc' -o -name '*.idv' -o -name '*.lg' -o -name '*.tmp' -o -name '*.xref' -o -name '*.mx1'  \) -delete
 
-ctanify --no-tds  -p recorder-fingering recorder-fingering.sty recorder-fingering.pdf README.md RecorderInCchart.png  recorder-fingering.tex=doc/latex/recorder-fingering
+ctanify --no-tds  -p recorder-fingering recorder-fingering.sty recorder-fingering.pdf README.md recorder-fingering.tex=doc/latex/recorder-fingering

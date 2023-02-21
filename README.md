@@ -6,4 +6,4 @@ The `recorder-fingering` package provides support for generating fingering diagr
 
 # Sample of what you can do with it:
 
-![Fingering chart](RecorderInCchart.png)
+![Fingering chart](recorder-fingering-RecorderInCchart.png)

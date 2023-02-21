@@ -25,7 +25,7 @@
 %
 % recorder-fingering.tex, recorder-fingering.pdf
 %
-% Version 1.1 2023/02/20
+% Version 1.1b 2023/02/21
 \NeedsTeXFormat{LaTeX2e}[2022/11/01]
 \ProvidesPackage{recorder-fingering}[2023/02/20 v1.1 Recorder fingering diagrams]
 \RequirePackage{tikz} 
@@ -60,6 +60,7 @@ t/.style={node split half=0}, % thumb half hole
 h/.style={node split half=-90}, % finger half hole
 top double/.style={circle,minimum size=7pt,inner sep=0pt,draw,##1}, 
 bottom double/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
+nodes={anchor=center}
 }}
 
 \ExplSyntaxOn

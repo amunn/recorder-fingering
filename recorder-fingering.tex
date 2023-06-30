@@ -33,9 +33,8 @@
     showstringspaces=false,
     breaklines=true,
     breakautoindent=true,
-    frame=single
-    captionpos=t
-    language=TeX
+    language=TeX,
+    frame=tl,
 }
   
 \newcommand*{\pkg}[1]{\texttt{#1}}
@@ -152,7 +151,7 @@ The third command is designed to enter a set of new fingerings at once. It will 
 \toprule
 \texttt{\bs NewFfingering\{<notename>\}\{<fingering vector>\}} \\\rule{3em}{0pt}Add a new note and fingering to the F recorder set\\
 \texttt{\bs NewCfingering\{<notename>\}\{<fingering vector>\}} \\\rule{3em}{0pt} Add a new note and fingering to the C recorder set\\
-\texttt{\bs AddFingerings\{<key>\}\{<note = \{<fingering vector>\}\}} \\\rule{3em}{0pt} Add a set of new fingerings to the F or C recorder set\\
+\texttt{\bs AddFingerings\{<key>\}\{<note = \{<fingering vector>\}>\}} \\\rule{3em}{0pt} Add a set of new fingerings to the F or C recorder set\\
 \bottomrule
 \end{tabularx}
 \caption{Commands for adding new fingerings}

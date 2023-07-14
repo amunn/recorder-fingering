@@ -1,0 +1,155 @@
+% !TEX TS-program = LuaLaTeXmk
+
+\documentclass[11pt]{article} 
+\usepackage{calc}
+\usepackage{fontspec}
+\usepackage[lmargin=.75in,rmargin=.75in,tmargin=1in,bmargin=1in]{geometry}
+\usepackage{titling}
+\usepackage{array, booktabs,tabularx}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+\usepackage{listings}
+\usepackage{url}
+\usepackage[sf,small]{titlesec}
+\usepackage[section]{placeins}
+\usepackage[colorlinks=true]{hyperref}
+%\setmonofont{Inconsolatazi4}
+\usepackage{./recorder-fingering}
+\usepackage{parskip}
+\usepackage{musixtex}
+\input musixlyr
+\usetikzlibrary{tikzmark}
+\usetikzlibrary{positioning}
+\NewDocumentCommand{\addf}{m}{\tikz[remember picture]{\node[overlay,above=of pic cs:#1]{\Soprano{#1}};}}
+\DefineShortVerb{\|}
+\title{Lord Of The Rings -- Concerning Hobbits}
+\author{Charles-Albert Lehalle}
+\date{Version 0.1\\July 14, 2023}
+  
+\lstset{%
+    basicstyle=\ttfamily\small,
+    commentstyle=\itshape\ttfamily\small,
+    showspaces=false,
+    showstringspaces=false,
+    breaklines=true,
+    breakautoindent=true,
+    language=TeX,
+    frame=tl,
+}
+  
+\newcommand*{\pkg}[1]{\texttt{#1}}
+\newcolumntype{t}[1]{>{\ttfamily}#1}
+\newcolumntype{T}{>{\ttfamily}c}
+\newcommand*{\bs}{\textbackslash}
+\setlength{\droptitle}{-1in}
+\renewcommand{\abstractname}{\sffamily Abstract}
+
+
+
+\begin{document}
+\maketitle
+
+\begin{center}
+  It comes from \href{https://www.youtube.com/watch?v=pgcVrtltHr4}{CutiePie's youtube channel}.\\[4ex]
+  
+  {\sc Part 1A\&B.}
+
+  \begin{tabular}{ccccccccccccccc}
+    \toprule
+    d & e & f\# & a & f\# & e & d & f\# & a & b & D & c\# & a & f\# & e \\
+    \midrule
+    \Irish{d} & 
+    \Irish{e} &
+    \Irish{f#} &
+    \Irish{a} &
+    \Irish{f#} & 
+    \Irish{e} & 
+    \Irish{d} &
+    \Irish{f#} & 
+    \Irish{a} &
+    \Irish{b} &
+    \Irish{D} &
+    \Irish{c#} &
+    \Irish{a} & 
+    \Irish{f#} & 
+    \Irish{e} \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+
+
+\begin{center}
+  {\sc Part 1.C\&D.}
+
+  \begin{tabular}{cccccccccccccc}
+    \toprule
+    d & e & f\# & a & f\# & e & d & f\# & a & b & a &f\# & e & d \\
+    \midrule
+    \Irish{d} & 
+    \Irish{e} &
+    \Irish{f#} &
+    \Irish{a} &
+    \Irish{f#} &
+    \Irish{e} & 
+    \Irish{d} & 
+    \Irish{f#} & 
+    \Irish{a} & 
+    \Irish{b} & 
+    \Irish{a} & 
+    \Irish{f#} & 
+    \Irish{e} & 
+    \Irish{d} \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+
+
+
+\begin{center}
+  {\sc Part 2.A.}
+
+  \begin{tabular}{ccccccccc}
+    \toprule
+    D & E & F\# & F\# & F\# & A & E & D & E \\
+    \midrule
+    \Irish{D} & 
+    \Irish{E} &
+    \Irish{F#} &
+    \Irish{F#} &
+    \Irish{F#} &
+    \Irish{A} & 
+    \Irish{E} & 
+    \Irish{D} & 
+    \Irish{E} \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+
+
+
+\begin{center}
+  {\sc Part 2.B.}
+
+  \begin{tabular}{ccccccccc}
+    \toprule
+    a & b & c\# & c\# & D & a & f\# & a & e \\
+    \midrule
+    \Irish{a} & 
+    \Irish{b} &
+    \Irish{c#} &
+    \Irish{c#} &
+    \Irish{D} &
+    \Irish{a} & 
+    \Irish{f#} & 
+    \Irish{a} & 
+    \Irish{e} \\
+    \bottomrule
+  \end{tabular}
+\end{center}
+
+
+
+
+
+
+\end{document} 

@@ -26,7 +26,7 @@
 %
 % recorder-fingering.tex, recorder-fingering.pdf
 %
-% Version 1.1b 2023/02/21
+% Version 1.1b.1 2023/07/14
 \NeedsTeXFormat{LaTeX2e}[2022/11/01]
 \ProvidesPackage{recorder-fingering}[2023/02/20 v1.1 Recorder fingering diagrams]
 \RequirePackage{tikz} 
@@ -57,6 +57,7 @@
 hole/.style={circle,draw,##1}, 
 1/.style={fill=black}, % closed hole
 0/.style={fill=none}, % open hole
+n/.style={draw=none,fill=none}, % no hole - for Irish whistle (only 6 holes) <== TODO better declaration
 t/.style={node split half=0}, % thumb half hole
 h/.style={node split half=-90}, % finger half hole
 top double/.style={circle,minimum size=7pt,inner sep=0pt,draw,##1}, 
@@ -75,11 +76,13 @@ nodes={anchor=center}
 
 % Set up the property lists for F and C fingerings
 \prop_new:N \l_fingering_F_prop
-\prop_new:N \l_fingering_C_prop
+\prop_new:N \l_fingering_C_prop 
+\prop_new:N \l_fingering_D_prop % Irish
 
 % Set up sharp/flat conversion list
 \prop_new:N \l_fingering_F_sharp_flat_prop
-\prop_new:N \l_fingering_C_sharp_flat_prop
+\prop_new:N \l_fingering_C_sharp_flat_prop 
+\prop_new:N \l_fingering_D_sharp_flat_prop % Irish
 
 % Set up transposition tables for later
 \prop_new:N \l_fingering_C_to_F_prop
@@ -109,6 +112,7 @@ nodes={anchor=center}
 \tl_const:Nn \c_fingering_three_tl {2.0}
 \tl_const:Nn \c_fingering_four_tl {2.5}
 \tl_const:Nn \c_fingering_five_tl {3.0}
+\tl_const:Nn \c_fingering_six_tl {3.5}
 \tl_const:Nn \c_fingering_six_seven_x_tl {0.15}
 \tl_const:Nn \c_fingering_six_top_tl {3.5}
 \tl_const:Nn \c_fingering_six_bot_tl {3.575}
@@ -148,6 +152,8 @@ nodes={anchor=center}
 	LHRHspace.initial:n = {4pt},
 	LHRHdivider.bool_set:N = \l_fingering_LHRH_divider_bool,
 	LHRHdivider.initial:n = {false},
+        sixHoles.bool_set:N = \l_fingering_six_holes_bool, % for Irish whistle 
+        sixHoles.initial:n =  {false}, % for Irish whistle 
 	LPointer.prop_put:N = \l_fingering_pointer_prop,
 	RPointer.prop_put:N = \l_fingering_pointer_prop,
 	trill.clist_set:N = \l_fingering_trill_holes_clist,
@@ -181,7 +187,7 @@ nodes={anchor=center}
 {
 \clist_set:Nn \l_fingering_holes_clist {#1}
 	\clist_clear:N \l_fingering_topholes_clist
-	\int_step_inline:nn { 4 } { 
+	\int_step_inline:nn { 4 } { % CAL- at the end of this: fingering_holes contains bottom holes (pop'ed) and topholes the 4 top holes
 		\clist_pop:NNF \l_fingering_holes_clist \l_tmpa_tl { \msg_error:nn { recorder-fingering } { too-few }}
 		\clist_put_right:NV \l_fingering_topholes_clist \l_tmpa_tl }
 		\resizebox{\l_fingering_size_dim}{!}{
@@ -202,7 +208,12 @@ nodes={anchor=center}
 			\node[hole=\l_tmpa_tl]~at~(0,-\c_fingering_four_tl)~{};
 			\clist_pop:NN \l_fingering_holes_clist \l_tmpa_tl
 			\node[hole=\l_tmpa_tl]~at~(0,-\c_fingering_five_tl)~{};
-% display the bottom two paired holes
+                        % display the bottom two paired holes -- Irish: this is there that I should split
+                        \bool_if:NTF \l_fingering_six_holes_bool {
+                          \clist_pop:NN \l_fingering_holes_clist \l_tmpa_tl
+                          \node[hole=\l_tmpa_tl]~at~(0,-\c_fingering_six_tl)~{};
+                          % I need to plot the 6th hole
+                          }{ % start of six holes ---->
 			\clist_pop:NN \l_fingering_holes_clist \l_tmpa_tl
 			\int_case:nnTF {\l_tmpa_tl}{ 
 			 {0}	{\node[top~double=0]~at~
@@ -241,7 +252,8 @@ nodes={anchor=center}
 			\clist_if_empty:NTF \l_fingering_holes_clist
 				{}
 				{\clist_pop:NN \l_fingering_holes_clist \l_tmpa_tl
-				\node[hole=\l_tmpa_tl]~at~(0,-\c_fingering_bell_tl)~{};}
+                                  \node[hole=\l_tmpa_tl]~at~(0,-\c_fingering_bell_tl)~{};}
+                        } % <--- end of six holes 
 % display trill arrows if present
 			\clist_if_empty:NTF \l_fingering_trill_holes_clist
 				{}
@@ -280,26 +292,43 @@ nodes={anchor=center}
 % create variable version of the command
 \cs_generate_variant:Nn \fingering_generate_fingering:n { V }
 
+
 % Main user commands and synonyms
 % First basic commands to display the fingering for any note
+% ------- Alto
 \NewDocumentCommand{\Alto}{O{}m}{
-	\group_begin:
-		\keys_set:nn {fingering} {#1}
-		\prop_get:NnN \l_fingering_F_prop {#2} \l_tmpa_tl
-		\fingering_generate_fingering:V \l_tmpa_tl
-	\group_end:
+  \group_begin:
+  \keys_set:nn {fingering} {#1}
+  \prop_get:NnN \l_fingering_F_prop {#2} \l_tmpa_tl
+  \fingering_generate_fingering:V \l_tmpa_tl
+  \group_end:
 }
+% ------- Sopranino      
 \cs_set_eq:NN \Sopranino \Alto
+% ------- BAss
 \cs_set_eq:NN \Bass \Alto
-
+% ------- Soprano
 \NewDocumentCommand{\Soprano}{O{}m}{
-	\group_begin:
-		\keys_set:nn {fingering} {#1}
-		\prop_get:NnN \l_fingering_C_prop {#2} \l_tmpa_tl
-		\fingering_generate_fingering:V \l_tmpa_tl
-	\group_end:
+  \group_begin:
+  \keys_set:nn {fingering} {#1}
+  \prop_get:NnN \l_fingering_C_prop {#2} \l_tmpa_tl
+  \fingering_generate_fingering:V \l_tmpa_tl
+  \group_end:
 }
+% ------- Tenor      
 \cs_set_eq:NN \Tenor \Soprano
+% ------- Soprano
+\NewDocumentCommand{\Irish}{O{}m}{
+  \group_begin:
+  \keys_set:nn {fingering} {#1}
+  \keys_set:nn {fingering} {sixHoles=true}
+  \prop_get:NnN \l_fingering_D_prop {#2} \l_tmpa_tl
+  \fingering_generate_fingering:V \l_tmpa_tl
+  \group_end:
+}
+
+% <===== END
+
 
 % Now commands to add new fingerings: 
 % First, a note = { } version for multiple fingerings
@@ -308,6 +337,7 @@ nodes={anchor=center}
 	\str_case:nnTF {#1}{
 	{F} {\prop_put_from_keyval:Nn \l_fingering_F_prop {#2}}
 	{C}{\prop_put_from_keyval:Nn \l_fingering_C_prop {#2}}
+	{D}{\prop_put_from_keyval:Nn \l_fingering_D_prop {#2}} % Irish
 	}
 	{}
 	{\msg_error:nn { recorder-fingering }{ wrong-instrument}}
@@ -331,11 +361,22 @@ nodes={anchor=center}
 	{\prop_put:Nnn \l_fingering_C_prop {#2} {#3}}
 	}}
 
+% Irish:
+\NewDocumentCommand{\NewDfingering}{smm}{
+\IfBooleanTF{#1}
+	{\prop_put:Nnn \l_fingering_D_prop {#2} {#3}}
+	{\prop_get:NnNTF \l_fingering_D_prop {#2} \l_tmpa_tl
+	{\msg_error:nn { recorder-fingering } { key-exists }}
+	{\prop_put:Nnn \l_fingering_D_prop {#2} {#3}}
+	}}
+
 % macros to copy fingerings (for now internal only)
 \cs_new_protected:Nn \fingering_add_F_fingering:nn {\prop_put:Nnn \l_fingering_F_prop {#1} {#2}}
 \cs_new_protected:Nn \fingering_add_C_fingering:nn {\prop_put:Nnn \l_fingering_C_prop {#1} {#2}}
+\cs_new_protected:Nn \fingering_add_D_fingering:nn {\prop_put:Nnn \l_fingering_D_prop {#1} {#2}} % Irish
 \cs_generate_variant:Nn \fingering_add_F_fingering:nn {nV}
 \cs_generate_variant:Nn \fingering_add_C_fingering:nn {nV}
+\cs_generate_variant:Nn \fingering_add_D_fingering:nn {nV} % Irish
 	 
 % These macros take two arguments: a new key and an existing key, and create a new
 % fingering in the associated property list with the new key name and the existing key
@@ -350,6 +391,12 @@ nodes={anchor=center}
 	 \prop_get:NoN \l_fingering_C_prop {\l_tmpa_tl} \l_tmpb_tl
 	 \fingering_add_C_fingering:nV {#1} {\l_tmpb_tl}}
 
+% Irish
+\cs_new_protected:Nn \fingering_copy_D:nn 
+	{\prop_get:NnN \l_fingering_D_sharp_flat_prop {#1} \l_tmpa_tl
+	 \prop_get:NoN \l_fingering_D_prop {\l_tmpa_tl} \l_tmpb_tl
+	 \fingering_add_D_fingering:nV {#1} {\l_tmpb_tl}}
+
 \NewDocumentCommand{\debug}{O{f}m}{
 	\str_case:nn {#1}{
 		{f}{\prop_get:NnNTF \l_fingering_F_prop {#2} \l_tmpa_tl 
@@ -358,13 +405,18 @@ nodes={anchor=center}
 		{c}{\prop_get:NnNTF \l_fingering_C_prop {#2} \l_tmpa_tl 
 			{}{\msg_error:nn { recorder-fingering } { key-not-found }}
 			\l_tmpa_tl
+                      }
+                % Irish
+		{c}{\prop_get:NnNTF \l_fingering_D_prop {#2} \l_tmpa_tl 
+			{}{\msg_error:nn { recorder-fingering } { key-not-found }}
+			\l_tmpa_tl
 			}
 	}
 }
 
 % Now add all of the basic fingerings
 \AddFingerings{F}{
-		F = {1,1,1,1,1,1,2,2}, 
+		F    = {1,1,1,1,1,1,2,2}, 
 		Gb = {1,1,1,1,1,1,2,1}, 
 		G = {1,1,1,1,1,1,2,0}, 
 		Ab = {1,1,1,1,1,1,0,0}, 
@@ -422,6 +474,37 @@ nodes={anchor=center}
 		db' = {t,1,0,1,1,0,2,2,1}, 
 		d' = {t,1,0,1,1,0,2,2},
 		eb' = {t,0,1,1,0,1,2,0}
+              }
+% Irish+
+\AddFingerings{D}{
+		C   = {n,1,1,1, 1,1,1, 0},
+		Db = {n,1,1,1, 1,1,1, 0}, 
+		D   = {n,0,1,1, 1,1,1, 0}, %-
+		Eb  = {n,1,1,1, 1,1,1, 0},
+		E   = {n,1,1,1, 1,1,0, 0}, 
+		F   = {n,1,1,1, 1,1,0, 0}, 
+		Gb = {n,1,1,1, 1,0,0, 0,0},
+		G   = {n,1,1,1, 1,0,0, 0},
+		Ab = {n,1,1,0, 0,0,0, 0},
+		A   = {n,1,1,0, 0,0,0, 0},
+		Bb = {n,1,1,0, 0,0,0, 0}, 
+		B   = {n,1,0,0, 0,0,0, 0}, 
+		c   = {n,1,1,1, 1,1,1, 0}, 
+		db = {n,0,0,0, 0,0,0, 0}, %-
+		d   = {n,1,1,1, 1,1,1, 0}, %-
+		eb = {n,0,1,1, 1,1,1, 0}, 
+		e   = {n,1,1,1, 1,1,0, 0}, %-
+		f    = {n,1,1,1, 1,0,0, 0}, 
+		gb = {n,1,1,1, 1,0,0, 0}, %-
+		g   = {n,1,1,1, 0,0,0, 0}, 
+		ab = {n,1,1,0, 1,0,0, 0}, 
+		a   = {n,1,1,0, 0,0,0, 0}, %-
+		bb = {n,1,1,0, 0,0,0, 0}, 
+		b   = {n,1,0,0, 0,0,0, 0},  %-
+		c'   = {n,1,0,0, 1,1,0, 0}, 
+		db' = {n,1,0,1, 1,0,1, 0,0}, 
+		d'   = {n,1,0,1, 1,0,1, 0},
+		eb' = {n,0,1,1, 0,1,1, 0}
 }
 
 % These are equivalent lists for generating the # versions
@@ -455,10 +538,27 @@ nodes={anchor=center}
 		c#' = {db'},
 		d#' = {eb'}
 }
+% Irish+
+\prop_set_from_keyval:Nn \l_fingering_D_sharp_flat_prop {
+		C# = {Db},
+		D# = {Eb},
+		Bb = {F},
+		F# = {Gb}, %-
+		G# = {Ab},
+		A# = {Bb},
+		c# = {db}, %-
+		d# = {eb},
+		f# = {gb},
+		g# = {ab},
+		a# = {bb},
+		c#' = {db'},
+		d#' = {eb'}
+}
 
 % Add all the sharp fingerings.
  \prop_map_function:NN \l_fingering_F_sharp_flat_prop \fingering_copy_F:nn
- \prop_map_function:NN \l_fingering_C_sharp_flat_prop \fingering_copy_C:nn
+ \prop_map_function:NN \l_fingering_C_sharp_flat_prop \fingering_copy_C:nn 
+ \prop_map_function:NN \l_fingering_D_sharp_flat_prop \fingering_copy_D:nn % Irish
  
 % Transposition tables (may be useful; currently not used)
 \prop_set_from_keyval:Nn \l_fingering_F_to_C_prop {

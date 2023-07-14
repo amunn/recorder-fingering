@@ -13,8 +13,8 @@
 \usepackage[sf,small]{titlesec}
 \usepackage[section]{placeins}
 \usepackage[colorlinks=true]{hyperref}
-\setmonofont{Inconsolatazi4}
-\usepackage{recorder-fingering}
+%\setmonofont{Inconsolatazi4}
+\usepackage{./recorder-fingering}
 \usepackage{parskip}
 \usepackage{musixtex}
 \input musixlyr
@@ -23,8 +23,8 @@
 \NewDocumentCommand{\addf}{m}{\tikz[remember picture]{\node[overlay,above=of pic cs:#1]{\Soprano{#1}};}}
 \DefineShortVerb{\|}
 \title{The \texttt{recorder-fingering} package}
-\author{Alan Munn\\amunn@msu.edu}
-\date{Version 1.1b\\February 21, 2023}
+\author{Alan Munn\\amunn@msu.edu\\(addition of Irish whistle (partial) by Charles-Albert Lehalle}
+\date{Version 1.1b.1\\July 14, 2023}
   
 \lstset{%
     basicstyle=\ttfamily\small,
@@ -192,7 +192,7 @@ Version 0.5 of this package (the initial version) was in response to a \href{htt
 \section{Acknowledgements}
 This is my first attempt to write a package using |expl3|. Thanks to Jonathan P. Spratte for suggesting how to split fingering vectors and the various LaTeX development team members (David Carlisle, Ulrike Fischer, Phelype Olenik and Joseph Wright) who have answered random |expl3| questions in the TeX.se chat. Thanks to Bob Tennent, whose suggestions resulted in version 1.1.  Thanks also to all the TeX.se users who have both asked and answered questions on the site. Your questions encourage new packages like this one and your answers help make the code better.
 \clearpage
-\section{Samples} The chart below shows all of the possible fingerings.\footnote{Since the top row of the table represents the input name, \pkg{b} and  \pkg{\#} are used instead the proper symbols \flat\ and \sharp.}
+\section{Samples} The chart below shows all of the possible fingerings.\footnote{Since the top row of the table represents the input name, \pkg{b} and  \pkg{\#} are used instead the proper symbols $\flat$\ and $\sharp$.}
 
 \section*{Recorder in C soprano chart}
 \begin{tabular}{cccccccccccc}
@@ -234,7 +234,7 @@ c & c\# & d & eb & e & f & f\# & g & ab & a & bb & b\\
 \bottomrule
 \end{tabular}
 
-\fingeringSetup{width=10pt,thumboffset=false}
+{\fingeringSetup{width=10pt,thumboffset=false}
 \bigskip
 
 Here's what the fingering diagrams look like with |thumboffset=false|:
@@ -250,6 +250,29 @@ c' & c\#' & d' & eb'\\
 \Soprano{eb'}\\
 \bottomrule
 \end{tabular}
+
+}
+\bigskip
+
+Now for Irish whisle
+
+\begin{tabular}{ccccccc}
+\toprule
+D & E & F\# & A & F\# & E & D \\
+\midrule
+\Irish{D} & 
+\Irish{E} &
+\Irish{F#} &
+\Irish{A} &
+\Irish{F#} & 
+\Irish{E} & 
+\Irish{D}\\
+\bottomrule
+\end{tabular}
+
+
+
+
 \clearpage
 \section{Using in conjunction with \texttt{musixtex}}
 \fingeringSetup{thumboffset=true,width=12pt}

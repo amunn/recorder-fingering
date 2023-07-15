@@ -24,7 +24,7 @@
 \DefineShortVerb{\|}
 \title{The \texttt{recorder-fingering} package}
 \author{Alan Munn\\amunn@msu.edu}
-\date{Version 1.1b\\February 21, 2023}
+\date{Version 1.2\\July 15, 2023}
   
 \lstset{%
     basicstyle=\ttfamily\small,
@@ -50,13 +50,13 @@
 \maketitle
 \thispagestyle{empty}
 \begin{abstract}{\noindent
-The |recorder-fingering| package provides support for generating fingering diagrams for baroque fingering recorders. Standard fingerings are provided for recorders in both C and F, along with methods to create and display alternate fingerings for trills, etc. 
+The |recorder-fingering| package provides support for generating fingering diagrams for baroque fingering recorders and the tin whistle. Standard fingerings are provided for recorders in both C and F, and the tin whistle in D, along with methods to create and display alternate fingerings for trills, etc. 
 }
 \end{abstract}
 
 
 \section{Display commands}
-This package provides five commands (|\Sopranino|, |\Soprano|, |\Alto|, |\Tenor|, and |\Bass|)\footnote{Because \pkg{musixtex} defines commands \pkg{\bs alto} and \pkg{\bs bass} the fingering display commands are capitalized.}  which will produce a fingering diagram for any note in the playable range of that recorder. At present, there are no differences between the three F recorders (sopranino, alto, and bass) and the two C recorders (soprano and tenor), so the different command names are simply there for convenience. 
+This package provides five recorder commands (|\Sopranino|, |\Soprano|, |\Alto|, |\Tenor|, and |\Bass|) and one tin whistle command (|\Whistle|).\footnote{Because \pkg{musixtex} defines commands \pkg{\bs alto} and \pkg{\bs bass} the fingering display commands are capitalized.}  which will produce a fingering diagram for any note in the playable range of that recorder. At present, there are no differences between the three F recorders (sopranino, alto, and bass) and the two C recorders (soprano and tenor), so the different command names are simply there for convenience. 
 
 
 \begin{table}[htpb]
@@ -73,9 +73,9 @@ This package provides five commands (|\Sopranino|, |\Soprano|, |\Alto|, |\Tenor|
 \caption{Display commands}
 \end{table}
 \subsection{Note ranges and notation\label{Notes}}
-The notes range from C–Eb for recorders in C (|\Soprano| and |\Tenor|) or F–Ab for recorders in F (|\Sopranino| and |\Alto|).
+The notes range from C–Eb for recorders in C (|\Soprano| and |\Tenor|) or F–Ab for recorders in F (|\Sopranino| and |\Alto|), and D-d' for the tin whistle. 
 
-Notes are noted as C-B (first octave) c-b (second octave) and c'–eb' (third octave) with an equivalent scheme starting at F for the recorders in F.
+Notes are noted as C-B (first octave) c-b (second octave) and c'–eb' (third octave) with an equivalent scheme starting at F for the recorders in F, and starting at D for the tin whistle.
 
 Enharmonic notes are available for any of the flat/sharp notes (i.e., Db and C\#, etc. are both defined by default.)
 \subsection{Display parameters}
@@ -98,7 +98,7 @@ trill = \{<list of holes>\} & add a trill marker at each hole position in the li
 \caption{Display options}
 \end{table}
 
-The |width| parameter sets the width of the diagram; it defaults to |20pt| for the default thumb offset diagrams. If you set |thumboffset=false| you will probably want to choose a smaller value e.g. |10pt|.
+The |width| parameter sets the width of the diagram; it defaults to |20pt| for the default thumb offset diagrams. If you set |thumboffset=false| you will probably want to choose a smaller value e.g. |10pt|.  Since the tin whistle has no thumb position, its default is set to |7pt|.
 
 The |trill| parameter sets an arrow pointing to a hole (numbered 1-7 from the top hole). This parameter is only in effect when using the display commands. It will place an arrow on the side specified by |trilldir| at a single hole or comma separated list of holes. e.g. |trill=3| sets an arrow at hole 3, |trill={6,7}| sets arrows at holes 6 and 7.
 
@@ -120,30 +120,31 @@ e.g. |\fingeringSetup{width=12pt,thumboffset=false}| makes all diagrams use an i
 \end{table}
 \section{Producing new fingerings}
 
-There are three commands to add new fingerings to the predefined list, or in fact, to change the existing defaults.
+There are four commands to add new fingerings to the predefined list, or in fact, to change the existing defaults.
 \subsection{Note names}
 Although the basic predefined fingerings use the note naming schema outlined in section \ref{Notes}, the note names themselves are arbitrary. This allows you to add trill fingerings or alternate fingerings with meaningful names, e.g. |ftrill| or |altF| are possible names for new fingerings.
 \subsection{Fingering vectors}
-Fingerings are specified using an 8 (and possibly 9) element comma separated list. Each position in the list denotes a hole starting from the thumb (position 0) to the bell (position 8). Each hole position is indicated by a hole state according to the following scheme:
+Fingerings are specified using an 8 (and possibly 9) element comma separated list (7 for the tin whistle\footnote{Since I don’t play the tin whistle, I don’t know if there are any esoteric fingerings similar to those in the recorder that use the knee to close the bell hole. But in case they do exist, it’s possible to specify a 7th hole for D fingerings.}). For the recorders, each position in the list denotes a hole starting from the thumb (position 0) to the bell (position 8). For the tin whistle, each position in the list denotes a hole. Each hole position is indicated by a hole state according to the following scheme:
 
 \begin{table}[htpb]
 \centering
 \begin{tabularx}{.8\textwidth}{t{r}X}
 \toprule
 0 &  open hole\\
-1 &  closed hole (positions 0-5); single closed hole (positions 6,7)\\
-2 &  double closed hole (positions 6,7 only)\\
+1 &  closed hole (positions 0-6); or single closed hole (recorder positions 6,7)\\
+2 &  double closed hole (recorder positions 6,7 only)\\
 t &  half hole (thumb)\\
-h &  half hole (positions 1-5)\\
+h &  half hole (positions 1-6)\\
 \bottomrule
 \end{tabularx}
 \caption{Hole states}
 \end{table}
+
 \subsection{New fingering commands}
 
-Two commands |\NewFfingering| and |\NewCfingering| are designed to add a single fingering. They check whether the name for the fingering is already used and produce an error if so. To overwrite an existing fingering, use |\NewFfingering*| and |\NewCfingering*|.
+Three commands |\NewFfingering|, |\NewCfingering|, and |\NewDfingering| are designed to add a single fingering. They check whether the name for the fingering is already used and produce an error if so. To overwrite an existing fingering, use |\NewFfingering*|, |\NewCfingering*| or |\NewDfingering*|.
 
-The third command is designed to enter a set of new fingerings at once. It will override any existing note names. It takes two arguments, a key, and a key value list consisting of note names plus fingering vectors. 
+The fourth command is designed to enter a set of new fingerings at once. It will override any existing note names. It takes two arguments, a key, (F, C, or D) and a key value list consisting of note names plus fingering vectors. 
 
 \begin{table}[htpb]
 \centering
@@ -151,12 +152,13 @@ The third command is designed to enter a set of new fingerings at once. It will 
 \toprule
 \texttt{\bs NewFfingering\{<notename>\}\{<fingering vector>\}} \\\rule{3em}{0pt}Add a new note and fingering to the F recorder set\\
 \texttt{\bs NewCfingering\{<notename>\}\{<fingering vector>\}} \\\rule{3em}{0pt} Add a new note and fingering to the C recorder set\\
-\texttt{\bs AddFingerings\{<key>\}\{<note = \{<fingering vector>\}>\}} \\\rule{3em}{0pt} Add a set of new fingerings to the F or C recorder set\\
+\texttt{\bs NewDfingering\{<notename>\}\{<fingering vector>\}} \\\rule{3em}{0pt} Add a new note and fingering to the tin whistle set\\
+\texttt{\bs AddFingerings\{<key>\}\{<note = \{<fingering vector>\}>\}} \\\rule{3em}{0pt} Add a set of new fingerings to the F, C or D instrument set\\
 \bottomrule
 \end{tabularx}
 \caption{Commands for adding new fingerings}
 \end{table}
-%\clearpage
+
 \subsection{New fingering examples}
 \NewFfingering{BbAtrill}{0,1,1,1,1,1,0,0}
 \AddFingerings{C}{
@@ -170,7 +172,7 @@ The third command is designed to enter a set of new fingerings at once. It will 
 \Alto[trill=5]{BbAtrill}
 \end{lstlisting}
 \Alto[trill=5]{BbAtrill}
-\clearpage
+
 \begin{lstlisting}
 \AddFingerings{C}{
 	EFtrill = {0,1,1,1,1,1,0,0},
@@ -188,13 +190,13 @@ The third command is designed to enter a set of new fingerings at once. It will 
 \Alto{agtrill}
 
 \section{Version History}
-Version 0.5 of this package (the initial version) was in response to a \href{https://tex.stackexchange.com/q/674847/2693}{TeX.se question} and used a substantially different set of user commands. The current version (1.0) is more flexible and has a more useable user interface. Version 1.1 added support for trill annotation, and added a separation between the left and right hand holes. Bug reports and feature requests are welcome at the \href{https://github.com/amunn/recorder-fingering/issues}{GitHub bug tracker}. 
+Version 0.5 of this package (the initial version) was in response to a \href{https://tex.stackexchange.com/q/674847/2693}{TeX.se question} and used a substantially different set of user commands. The current version (1.0) is more flexible and has a more useable user interface. Version 1.1 added support for trill annotation, and added a separation between the left and right hand holes.  Version 1.2 added support for the tin whistle. Bug reports and feature requests are welcome at the \href{https://github.com/amunn/recorder-fingering/issues}{GitHub bug tracker}. 
 \section{Acknowledgements}
-This is my first attempt to write a package using |expl3|. Thanks to Jonathan P. Spratte for suggesting how to split fingering vectors and the various LaTeX development team members (David Carlisle, Ulrike Fischer, Phelype Olenik and Joseph Wright) who have answered random |expl3| questions in the TeX.se chat. Thanks to Bob Tennent, whose suggestions resulted in version 1.1.  Thanks also to all the TeX.se users who have both asked and answered questions on the site. Your questions encourage new packages like this one and your answers help make the code better.
+This is my first attempt to write a package using |expl3|. Thanks to Jonathan P. Spratte for suggesting how to split fingering vectors and the various LaTeX development team members (David Carlisle, Ulrike Fischer, Phelype Olenik and Joseph Wright) who have answered random |expl3| questions in the TeX.se chat. Thanks to Bob Tennent, whose suggestions resulted in version 1.1.  Thanks also to all the TeX.se users who have both asked and answered questions on the site. Your questions encourage new packages like this one and your answers help make the code better. Thanks to Charles-Albert Lehalle for the suggestion to add the tin whistle. 
 \clearpage
-\section{Samples} The chart below shows all of the possible fingerings.\footnote{Since the top row of the table represents the input name, \pkg{b} and  \pkg{\#} are used instead the proper symbols \flat\ and \sharp.}
+\section{Samples} The charts below shows all of the defaults fingerings for the C recorders and the tin whistle.\footnote{Since the top row of the table represents the input name, \pkg{b} and  \pkg{\#} are used instead the proper symbols \flat\ and \sharp.}
 
-\section*{Recorder in C soprano chart}
+\section*{Soprano recorder in C  fingering chart}
 \begin{tabular}{cccccccccccc}
 \toprule
 C & C\# & D & Eb & E & F & F\# & G & Ab & A & Bb & B\\ 
@@ -234,22 +236,65 @@ c & c\# & d & eb & e & f & f\# & g & ab & a & bb & b\\
 \bottomrule
 \end{tabular}
 
-\fingeringSetup{width=10pt,thumboffset=false}
 \bigskip
+\begin{minipage}[t]{.66\linewidth}
+\fingeringSetup{width=7pt}
+\section*{Tin whistle in D fingering chart}
+\begin{tabular}{*{12}c}
+\toprule
+D & D\# & E & F & F\# & G & G\# & A & A\# & B & C & C\#\\ 
+\midrule
+\Whistle{D} & 
+\Whistle{D#} & 
+\Whistle{E} &
+\Whistle{F} &
+\Whistle{F#} &
+\Whistle{G} &
+\Whistle{G#} &
+\Whistle{A} &
+\Whistle{A#} &
+\Whistle{B} &
+\Whistle{C} & 
+\Whistle{C#}\\
+\bottomrule
+\end{tabular}
 
-Here's what the fingering diagrams look like with |thumboffset=false|:
-
-
+\bigskip
+\begin{tabular}{*{13}c}
+\toprule
+d & d\# & e & f & f\# & g & g\# & a & a\# & b & c & c\# & d' \\ 
+\midrule
+\Whistle{d} &
+\Whistle{d#} &
+\Whistle{e} &
+\Whistle{f} &
+\Whistle{f#} &
+\Whistle{g} &
+\Whistle{g#} &
+\Whistle{a} &
+\Whistle{a#} &
+\Whistle{b} &
+\Whistle{c} &
+\Whistle{c#} &
+\Whistle{d'} \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\fingeringSetup{width=10pt,thumboffset=false}
+\hfill
+\begin{minipage}[t]{.33\linewidth}
+\section*{\raggedright Example diagrams  with \texttt{thumboffset=false}}
 \begin{tabular}{cccc}
 \toprule
 c' & c\#' & d' & eb'\\
 \midrule
 \Soprano{c'} &
 \Soprano{db'} &
-\Soprano{d'} &
+ &
 \Soprano{eb'}\\
 \bottomrule
 \end{tabular}
+\end{minipage}
 \clearpage
 \section{Using in conjunction with \texttt{musixtex}}
 \fingeringSetup{thumboffset=true,width=12pt}

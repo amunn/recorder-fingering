@@ -5,23 +5,31 @@
 \usepackage{fontspec}
 \usepackage[lmargin=.75in,rmargin=.75in,tmargin=1in,bmargin=1in]{geometry}
 \usepackage{titling}
+
 \usepackage{array, booktabs,tabularx}
+\usepackage{arydshln}
+
 \usepackage{enumitem}
+
 \usepackage{fancyvrb}
+
 \usepackage{listings}
 \usepackage{url}
 \usepackage[sf,small]{titlesec}
 \usepackage[section]{placeins}
 \usepackage[colorlinks=true]{hyperref}
-%\setmonofont{Inconsolatazi4}
+
+% \setmonofont{Inconsolatazi4}
 \usepackage{./recorder-fingering}
 \usepackage{parskip}
 \usepackage{musixtex}
 \input musixlyr
 \usetikzlibrary{tikzmark}
 \usetikzlibrary{positioning}
-\NewDocumentCommand{\addf}{m}{\tikz[remember picture]{\node[overlay,above=of pic cs:#1]{\Soprano{#1}};}}
+
+\NewDocumentCommand{\addf}{m}{\tikz[remember picture]{\node[overlay,above=of pic cs:#1]{\Irish{#1}};}}
 \DefineShortVerb{\|}
+
 \title{Lord Of The Rings -- Concerning Hobbits}
 \author{Charles-Albert Lehalle}
 \date{Version 0.1\\July 14, 2023}
@@ -44,7 +52,8 @@
 \setlength{\droptitle}{-1in}
 \renewcommand{\abstractname}{\sffamily Abstract}
 
-
+\def\spaceforvbar{\rule{2ex}{0pt}}
+\def\mypause{\rule{1.5ex}{0.5pt}}
 
 \begin{document}
 \maketitle
@@ -52,9 +61,9 @@
 \begin{center}
   It comes from \href{https://www.youtube.com/watch?v=pgcVrtltHr4}{CutiePie's youtube channel}.\\[4ex]
   
-  {\sc Part 1A\&B.}
+  {\sc Part 1.A\&B.}
 
-  \begin{tabular}{ccccccccccccccc}
+  \begin{tabular}{ccccccc|cccccccc}
     \toprule
     d & e & f\# & a & f\# & e & d & f\# & a & b & D & c\# & a & f\# & e \\
     \midrule
@@ -64,7 +73,7 @@
     \Irish{a} &
     \Irish{f#} & 
     \Irish{e} & 
-    \Irish{d} &
+    \Irish{d}\spaceforvbar &
     \Irish{f#} & 
     \Irish{a} &
     \Irish{b} &
@@ -81,7 +90,7 @@
 \begin{center}
   {\sc Part 1.C\&D.}
 
-  \begin{tabular}{cccccccccccccc}
+  \begin{tabular}{ccccccc|ccccccc}
     \toprule
     d & e & f\# & a & f\# & e & d & f\# & a & b & a &f\# & e & d \\
     \midrule
@@ -91,7 +100,7 @@
     \Irish{a} &
     \Irish{f#} &
     \Irish{e} & 
-    \Irish{d} & 
+    \Irish{d}\spaceforvbar & 
     \Irish{f#} & 
     \Irish{a} & 
     \Irish{b} & 
@@ -103,28 +112,27 @@
   \end{tabular}
 \end{center}
 
-
+%
 
 \begin{center}
-  {\sc Part 2.A.}
+  {\sc Part 2.A. (+)}
 
-  \begin{tabular}{ccccccccc}
+  \begin{tabular}{cccc:ccccc}
     \toprule
-    D & E & F\# & F\# & F\# & A & E & D & E \\
+    D & E & F\# & F\# & F\# & A & E & (D) & E \\
     \midrule
     \Irish{D} & 
     \Irish{E} &
     \Irish{F#} &
-    \Irish{F#} &
+    \Irish{F#}\spaceforvbar &
     \Irish{F#} &
     \Irish{A} & 
     \Irish{E} & 
-    \Irish{D} & 
+    \Irish{d} & 
     \Irish{E} \\
     \bottomrule
   \end{tabular}
 \end{center}
-
 
 
 \begin{center}
@@ -147,9 +155,58 @@
   \end{tabular}
 \end{center}
 
+%
+\clearpage
+\begin{center}
+  {\sc Part 3.A.}
 
+  \begin{tabular}{ccc:cccc:ccccc}
+    \toprule
+    d & e & f\# & f\# & b & c\# & D & c\# & a & f\# & e \\
+    \midrule
+    \Irish{d} & 
+    \Irish{e} &
+    \Irish{f#}\spaceforvbar &
+    \Irish{f#} &
+    \Irish{b} &
+    \Irish{c#} & 
+    \Irish{D}\spaceforvbar & 
+    \Irish{c#} & 
+    \Irish{a} & 
+    \Irish{f#} & 
+    \Irish{e} \\
+    \bottomrule
+  \end{tabular}
+\end{center}
 
+\begin{center}
+  {\sc Part 3.B.}
 
+  \begin{tabular}{ccc:cccc:ccc:ccc}
+    \toprule
+    d & e & f\# & f\# & b & c\# & D & c\# & v & a & e & d \\
+    \midrule
+    \Irish{d} & 
+    \Irish{e} &
+    \Irish{f#}\spaceforvbar &
+    \Irish{f#} &
+    \Irish{b} &
+    \Irish{c#} & 
+    \Irish{D}\spaceforvbar & 
+    \Irish{c#} & 
+    \Irish{b} & 
+    \Irish{a}\spaceforvbar & 
+    \Irish{e} & 
+    \Irish{d} \\
+    \bottomrule
+  \end{tabular}
+\end{center}
 
 
 \end{document} 
+
+
+
+% Local Variables:
+% TeX-engine: xetex
+% End:

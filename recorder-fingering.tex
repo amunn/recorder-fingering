@@ -68,6 +68,7 @@ This package provides five recorder commands (|\Sopranino|, |\Soprano|, |\Alto|,
 \bs Alto [<parameters>]\{<note>\} & Display a fingering diagram for note in F\\
 \bs Tenor [<parameters>]\{<note>\} & Display a fingering diagram for note in C\\
 \bs Bass [<parameters>]\{<note>\} & Display a fingering diagram for note in F\\
+\bs Whistle [<parameters>]\{<note>\} & Display a tin whistle  diagram (in D) \\
 \bottomrule
 \end{tabularx}
 \caption{Display commands}
@@ -98,7 +99,7 @@ trill = \{<list of holes>\} & add a trill marker at each hole position in the li
 \caption{Display options}
 \end{table}
 
-The |width| parameter sets the width of the diagram; it defaults to |20pt| for the default thumb offset diagrams. If you set |thumboffset=false| you will probably want to choose a smaller value e.g. |10pt|.  Since the tin whistle has no thumb position, its default is set to |7pt|.
+The |width| parameter sets the width of the diagram; it defaults to |20pt| for the default thumb offset diagrams. If you set |thumboffset=false| you will probably want to choose a smaller value e.g. |10pt|.  Since the tin whistle has no thumb position, I recommend setting the |width| parameter for tin whistle diagrams to |7pt|.
 
 The |trill| parameter sets an arrow pointing to a hole (numbered 1-7 from the top hole). This parameter is only in effect when using the display commands. It will place an arrow on the side specified by |trilldir| at a single hole or comma separated list of holes. e.g. |trill=3| sets an arrow at hole 3, |trill={6,7}| sets arrows at holes 6 and 7.
 

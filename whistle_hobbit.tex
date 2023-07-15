@@ -27,7 +27,7 @@
 \usetikzlibrary{tikzmark}
 \usetikzlibrary{positioning}
 
-\NewDocumentCommand{\addf}{m}{\tikz[remember picture]{\node[overlay,above=of pic cs:#1]{\Irish{#1}};}}
+\NewDocumentCommand{\addf}{mm}{\tikz[remember picture]{\node[overlay,above=of pic cs:#2]{\Irish{#1}};}}
 \DefineShortVerb{\|}
 
 \title{Lord Of The Rings -- Concerning Hobbits}
@@ -65,7 +65,7 @@
 
   \begin{tabular}{ccccccc|cccccccc}
     \toprule
-    d & e & f\# & a & f\# & e & d & f\# & a & b & D & c\# & a & f\# & e \\
+    d & e & f\# & a & f\# & e & d & f\# & a & b & $\circ$~D & c\# & a & f\# & $\circ$~e \\
     \midrule
     \Irish{d} & 
     \Irish{e} &
@@ -90,9 +90,9 @@
 \begin{center}
   {\sc Part 1.C\&D.}
 
-  \begin{tabular}{ccccccc|ccccccc}
+  \begin{tabular}{ccccccc|cccccc:c}
     \toprule
-    d & e & f\# & a & f\# & e & d & f\# & a & b & a &f\# & e & d \\
+    d & e & f\# & $\circ$~a & f\# & e & d & f\# & a & b & $\circ$~a &f\# & e & d \\
     \midrule
     \Irish{d} & 
     \Irish{e} &
@@ -106,7 +106,7 @@
     \Irish{b} & 
     \Irish{a} & 
     \Irish{f#} & 
-    \Irish{e} & 
+    \Irish{e}\spaceforvbar & 
     \Irish{d} \\
     \bottomrule
   \end{tabular}
@@ -202,6 +202,26 @@
   \end{tabular}
 \end{center}
 
+\clearpage
+\subsection*{Attempt to put MusixTeX and fingering in sync}
+\vspace{\heightof{\Irish{C}}+\baselineskip}
+\begin{music} % d & e & f\# & a & f\# & e & d
+\setlyrics{scale}{d e f\# a f\# e d}
+\lyrraise{1}{b-2ex}
+\assignlyrics{1}{scale}
+\startextract
+\NOTEs
+\tikzmark{d:1}\qu{d}
+\tikzmark{e:1}\qu{=e}
+\tikzmark{f:1}\qu{^f}
+\tikzmark{a}\qu{h}
+\tikzmark{f:2}\qu{^f}
+\tikzmark{e:2}\qu{=e}
+\tikzmark{d:2}\qu{d}
+\en
+\zendextract
+\end{music}
+\addf{d}{d:1}\addf{e}{e:1}\addf{f#}{f:1}\addf{a}{a}\addf{f#}{f:2}\addf{e}{e:2}\addf{d}{d:2}
 
 \end{document} 
 

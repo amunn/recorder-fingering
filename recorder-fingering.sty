@@ -26,9 +26,9 @@
 %
 % recorder-fingering.tex, recorder-fingering.pdf
 %
-% Version 1.4 2025/02/02
+% Version 1.5 2025/11/09
 \NeedsTeXFormat{LaTeX2e}[2022/11/01]
-\ProvidesPackage{recorder-fingering}[2025/02/02 v1.4 Recorder fingering diagrams]
+\ProvidesPackage{recorder-fingering}[2025/11/09 v1.5 Recorder fingering diagrams]
 \RequirePackage{tikz} 
 \usetikzlibrary{calc} 
 \RequirePackage{graphicx}
@@ -58,7 +58,7 @@ hole/.style={circle,draw,##1},
 1/.style={fill=black}, % closed hole
 0/.style={fill=none}, % open hole
 t/.style={node split half=0}, % thumb half hole
-h/.style={node split half=-90}, % finger half hole
+h/.style={node split half=90}, % finger half hole
 o/.style={fill=none,font={\textbullet},inner sep=.5pt,align=center}, % hole closed if required
 top double rev/.style={circle,minimum size=7pt,inner sep=0pt,draw,##1}, 
 bottom double rev/.style={circle,minimum size=6pt,inner sep=0pt,draw,##1},
@@ -277,8 +277,8 @@ nodes={anchor=center}
 			{\draw[overlay]~($(-.5,-2.25)+(0,-\l_fingering_top_bottom_space_tl/2)$)~
 							--($(.5,-2.25)+(0,-\l_fingering_top_bottom_space_tl/2)$);}
 			{}
-% now shift the bottom holes to make a small space between LH and RH holes
-			\begin{scope}[yshift=-\l_fingering_top_bottom_space_tl]
+% now shift the bottom holes to make a small space between LH and RH holes and change orientation of half holes
+			\begin{scope}[yshift=-\l_fingering_top_bottom_space_tl,h/.style={node~split~half=-90}]
 			\clist_pop:NN \l_fingering_holes_clist \l_fingering_tmpa_tl
 			\node[hole=\l_fingering_tmpa_tl]~at~(0,-\l_fingering_four_tl)~{};
 			\clist_pop:NN \l_fingering_holes_clist \l_fingering_tmpa_tl
